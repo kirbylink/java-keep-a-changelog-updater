@@ -61,7 +61,7 @@ public class UpdateService {
   private String generateNewVersion(String releaseVersionOld, ReleaseType release) {
 
     if (release == null) {
-      throw new IllegalArgumentException("Category cannot be null");
+      throw new IllegalArgumentException("Release type cannot be null");
     }
 
     var pattern = Pattern.compile("^(\\D*?)(\\d+\\.\\d+\\.\\d+)$");
