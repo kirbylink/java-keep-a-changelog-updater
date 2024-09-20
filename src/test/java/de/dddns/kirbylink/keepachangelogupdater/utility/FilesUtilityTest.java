@@ -1,17 +1,14 @@
 package de.dddns.kirbylink.keepachangelogupdater.utility;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.Test;
 
 class FilesUtilityTest {
 
-  private final static String CHANGELOG = """
+  private static final String CHANGELOG = """
       # Changelog of some application
 
       All notable changes to this project will be documented in this file.
@@ -44,18 +41,6 @@ class FilesUtilityTest {
       [0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0
       [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1""";
 
-  @BeforeAll
-  static void setUpBeforeClass() throws Exception {}
-
-  @AfterAll
-  static void tearDownAfterClass() throws Exception {}
-
-  @BeforeEach
-  void setUp() throws Exception {}
-
-  @AfterEach
-  void tearDown() throws Exception {}
-
   @Test
   void testReadFileAsString_WhenFileIsRead_ThenContentIsEqualToChanglogString() throws IOException {
 
@@ -81,7 +66,7 @@ class FilesUtilityTest {
     var actualPath = FilesUtility.writeStringAsFile(filePath, CHANGELOG);
 
     // Then
-    assertThat(actualPath).exists()
+    AssertionsForInterfaceTypes.assertThat(actualPath).exists()
       .binaryContent().isEqualTo(CHANGELOG.getBytes());
   }
 }
