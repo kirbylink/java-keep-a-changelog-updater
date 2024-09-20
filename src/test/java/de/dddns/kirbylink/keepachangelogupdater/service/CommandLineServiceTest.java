@@ -1,14 +1,12 @@
 package de.dddns.kirbylink.keepachangelogupdater.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,19 +20,10 @@ class CommandLineServiceTest {
 
   private CommandLineService commandLineService;
 
-  @BeforeAll
-  static void setUpBeforeClass() throws Exception {}
-
-  @AfterAll
-  static void tearDownAfterClass() throws Exception {}
-
   @BeforeEach
   void setUp() {
     commandLineService = new CommandLineService();
   }
-
-  @AfterEach
-  void tearDown() throws Exception {}
 
   @Nested
   @DisplayName("Test for get options")
@@ -49,7 +38,7 @@ class CommandLineServiceTest {
       var options = commandLineService.getScenarioOptions();
 
       // Then
-      assertThat(options.getOptions()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(options.getOptions()).hasSize(2);
 
       assertThat(options.hasOption("s")).isTrue();
       assertThat(options.getOption("s").isRequired()).isFalse();
@@ -73,7 +62,7 @@ class CommandLineServiceTest {
       var options = commandLineService.getScenarioCreateOptions();
 
       // Then
-      assertThat(options.getOptions()).hasSize(6);
+      AssertionsForInterfaceTypes.assertThat(options.getOptions()).hasSize(6);
 
       assertThat(options.hasOption("o")).isTrue();
       assertThat(options.getOption("o").isRequired()).isFalse();
@@ -109,7 +98,7 @@ class CommandLineServiceTest {
       var options = commandLineService.getScenarioAddEntryOptions();
 
       // Then
-      assertThat(options.getOptions()).hasSize(6);
+      AssertionsForInterfaceTypes.assertThat(options.getOptions()).hasSize(6);
 
       assertThat(options.hasOption("i")).isTrue();
       assertThat(options.getOption("i").isRequired()).isTrue();
@@ -145,7 +134,7 @@ class CommandLineServiceTest {
       var options = commandLineService.getScenarioReleaseOptions();
 
       // Then
-      assertThat(options.getOptions()).hasSize(6);
+      AssertionsForInterfaceTypes.assertThat(options.getOptions()).hasSize(6);
 
       assertThat(options.hasOption("i")).isTrue();
       assertThat(options.getOption("i").isRequired()).isTrue();
