@@ -1,12 +1,10 @@
 package de.dddns.kirbylink.keepachangelogupdater.converter;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,7 +23,7 @@ class ChangelogConverterTest {
 
   private ChangelogConverter changelogConverter;
 
-  private final static String CHANGELOG = """
+  private static final String CHANGELOG = """
       # Changelog of some application
 
       All notable changes to this project will be documented in this file.
@@ -59,19 +57,10 @@ class ChangelogConverterTest {
       [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1
       """;
 
-  @BeforeAll
-  static void setUpBeforeClass() throws Exception {}
-
-  @AfterAll
-  static void tearDownAfterClass() throws Exception {}
-
   @BeforeEach
   void setUp() {
     changelogConverter = new ChangelogConverter("https://git.example.com:443/organization/repo.git", "main");
   }
-
-  @AfterEach
-  void tearDown() throws Exception {}
 
   @Test
   void testCreateDefaultEntity_WhenMethodIsCalled_ThenDefaultEmptyEntityIsReturned() {
@@ -87,14 +76,14 @@ class ChangelogConverterTest {
     assertThat(header.getTitle()).isEqualTo("Changelog");
     assertThat(header.getDescription()).contains("All notable changes to this project will be documented in this file.");
 
-    assertThat(entity.getVersions()).isNotEmpty().hasSize(1);
+    AssertionsForInterfaceTypes.assertThat(entity.getVersions()).isNotEmpty().hasSize(1);
     var versionUnreleased = entity.getVersions().get(0);
     assertThat(versionUnreleased.getReleaseVersion()).isEqualTo("Unreleased");
     assertThat(versionUnreleased.getDate()).isEmpty();
     assertThat(versionUnreleased.getAdded()).isNotNull();
 
     assertThat(entity.getFooter()).isNotNull();
-    assertThat(entity.getFooter().getUrls()).isEmpty();
+    AssertionsForInterfaceTypes.assertThat(entity.getFooter().getUrls()).isEmpty();
 
   }
 
@@ -114,7 +103,7 @@ class ChangelogConverterTest {
     assertThat(header.getTitle()).isEqualTo("Changelog of some application");
     assertThat(header.getDescription()).contains("All notable changes to this project will be documented in this file.").contains("And there is some additional description.");
 
-    assertThat(entity.getVersions()).isNotEmpty().hasSize(3);
+    AssertionsForInterfaceTypes.assertThat(entity.getVersions()).isNotEmpty().hasSize(3);
     var versions = entity.getVersions();
     var versionUnreleased = versions.get(0);
     assertThat(versionUnreleased.getReleaseVersion()).isEqualTo("Unreleased");
@@ -124,21 +113,21 @@ class ChangelogConverterTest {
     var versionSecond = versions.get(1);
     assertThat(versionSecond.getReleaseVersion()).isEqualTo("0.1.0");
     assertThat(versionSecond.getDate()).isEqualTo("2024-07-20");
-    assertThat(versionSecond.getAdded().getEntries()).isEmpty();
-    assertThat(versionSecond.getChanged().getEntries()).isNotEmpty();
-    assertThat(versionSecond.getFixed().getEntries()).isNotEmpty();
-    assertThat(versionSecond.getRemoved().getEntries()).isNotEmpty();
+    AssertionsForInterfaceTypes.assertThat(versionSecond.getAdded().getEntries()).isEmpty();
+    AssertionsForInterfaceTypes.assertThat(versionSecond.getChanged().getEntries()).isNotEmpty();
+    AssertionsForInterfaceTypes.assertThat(versionSecond.getFixed().getEntries()).isNotEmpty();
+    AssertionsForInterfaceTypes.assertThat(versionSecond.getRemoved().getEntries()).isNotEmpty();
 
     var versionThird = versions.get(2);
     assertThat(versionThird.getReleaseVersion()).isEqualTo("0.0.1");
     assertThat(versionThird.getDate()).isEqualTo("2024-06.30");
-    assertThat(versionThird.getAdded().getEntries()).isNotEmpty();
-    assertThat(versionThird.getChanged().getEntries()).isEmpty();
-    assertThat(versionThird.getFixed().getEntries()).isEmpty();
-    assertThat(versionThird.getRemoved().getEntries()).isEmpty();
+    AssertionsForInterfaceTypes.assertThat(versionThird.getAdded().getEntries()).isNotEmpty();
+    AssertionsForInterfaceTypes.assertThat(versionThird.getChanged().getEntries()).isEmpty();
+    AssertionsForInterfaceTypes.assertThat(versionThird.getFixed().getEntries()).isEmpty();
+    AssertionsForInterfaceTypes.assertThat(versionThird.getRemoved().getEntries()).isEmpty();
 
     assertThat(entity.getFooter()).isNotNull();
-    assertThat(entity.getFooter().getUrls()).isNotEmpty().hasSize(3);
+    AssertionsForInterfaceTypes.assertThat(entity.getFooter().getUrls()).isNotEmpty().hasSize(3);
   }
 
   @ParameterizedTest
@@ -309,7 +298,7 @@ class ChangelogConverterTest {
     var urls = changelogConverter.convertToEntityFooterUrls(versions);
 
     // Then
-    assertThat(urls).isEmpty();
+    AssertionsForInterfaceTypes.assertThat(urls).isEmpty();
   }
 
   @Test
@@ -334,7 +323,7 @@ class ChangelogConverterTest {
     var urls = changelogConverter.convertToEntityFooterUrls(versions);
 
     // Then
-    assertThat(urls).isNotEmpty().hasSize(4);
+    AssertionsForInterfaceTypes.assertThat(urls).isNotEmpty().hasSize(4);
     assertThat(urls.get(0)).isEqualTo("[unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD");
     assertThat(urls.get(1)).isEqualTo("[0.1.1]: https://git.example.com:443/organization/repo.git/compare/0.1.0...0.1.1");
     assertThat(urls.get(2)).isEqualTo("[0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0");

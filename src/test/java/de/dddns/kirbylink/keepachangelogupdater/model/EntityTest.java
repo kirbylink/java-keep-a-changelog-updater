@@ -1,12 +1,9 @@
 package de.dddns.kirbylink.keepachangelogupdater.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.Test;
 import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryAdded;
 import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryChanged;
@@ -14,18 +11,6 @@ import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryRemoved;
 
 class EntityTest {
-
-  @BeforeAll
-  static void setUpBeforeClass() throws Exception {}
-
-  @AfterAll
-  static void tearDownAfterClass() throws Exception {}
-
-  @BeforeEach
-  void setUp() throws Exception {}
-
-  @AfterEach
-  void tearDown() throws Exception {}
 
   @Test
   void test_WhenEntityIsCreatedWithAllFields_ThenEntityContainsHeaderVersionsAndFooter() {
@@ -93,9 +78,9 @@ class EntityTest {
     assertThat(entity.getHeader()).isNotNull();
     assertThat(entity.getHeader().getTitle()).isEqualTo("Changelog");
 
-    assertThat(entity.getVersions()).isNotEmpty().hasSize(2);
+    AssertionsForInterfaceTypes.assertThat(entity.getVersions()).isNotEmpty().hasSize(2);
 
     assertThat(entity.getFooter()).isNotNull();
-    assertThat(entity.getFooter().getUrls()).isNotNull().hasSize(2);
+    AssertionsForInterfaceTypes.assertThat(entity.getFooter().getUrls()).isNotNull().hasSize(2);
   }
 }

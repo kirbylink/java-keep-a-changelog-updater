@@ -1,12 +1,10 @@
 package de.dddns.kirbylink.keepachangelogupdater.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,19 +30,10 @@ class UpdateServiceTest {
 
   private UpdateService updateService;
 
-  @BeforeAll
-  static void setUpBeforeClass() throws Exception {}
-
-  @AfterAll
-  static void tearDownAfterClass() throws Exception {}
-
   @BeforeEach
   void setUp() {
     updateService = new UpdateService();
   }
-
-  @AfterEach
-  void tearDown() throws Exception {}
 
   @Nested
   @DisplayName("Test for updateChangelog method")
@@ -61,9 +50,9 @@ class UpdateServiceTest {
       updateService.updateChangelog(entity, "Add new entry", category, UNRELEASED_VERSION, "");
 
       // Then
-      assertThat(entity.getVersions()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(1);
       assertThat(entity.getVersions().get(0).getDate()).isEmpty();
-      assertThat(entity.getVersions().get(0).getCategory(category).getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(0).getCategory(category).getEntries()).hasSize(1);
       assertThat(entity.getVersions().get(0).getCategory(category).getEntries().get(0).getDescription()).isEqualTo("Add new entry");
     }
 
@@ -80,7 +69,7 @@ class UpdateServiceTest {
       updateService.updateChangelog(entity, "Add new entry", CategoryType.ADDED, UNRELEASED_VERSION, "");
 
       // Then
-      assertThat(entity.getVersions().get(0).getAdded().getEntries()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(0).getAdded().getEntries()).hasSize(2);
       assertThat(entity.getVersions().get(0).getAdded().getEntries().get(0).getDescription()).isEqualTo("Add new entry");
       assertThat(entity.getVersions().get(0).getAdded().getEntries().get(1).getDescription()).isEqualTo("Add example entry");
     }
@@ -99,7 +88,7 @@ class UpdateServiceTest {
       updateService.updateChangelog(entity, "Add new entry", CategoryType.ADDED, "1.0.1", "2024-07-22");
 
       // Then
-      assertThat(entity.getVersions().get(1).getAdded().getEntries()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(1).getAdded().getEntries()).hasSize(2);
       assertThat(entity.getVersions().get(1).getAdded().getEntries().get(0).getDescription()).isEqualTo("Add new entry");
       assertThat(entity.getVersions().get(1).getAdded().getEntries().get(1).getDescription()).isEqualTo("Add example entry");
       assertThat(entity.getVersions().get(1).getDate()).isEqualTo("2024-07-22");
@@ -118,8 +107,8 @@ class UpdateServiceTest {
       updateService.updateChangelog(entity, "Remove new entry", CategoryType.REMOVED, UNRELEASED_VERSION, "");
 
       // Then
-      assertThat(entity.getVersions().get(0).getAdded().getEntries()).hasSize(1);
-      assertThat(entity.getVersions().get(0).getRemoved().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(0).getAdded().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(0).getRemoved().getEntries()).hasSize(1);
       assertThat(entity.getVersions().get(0).getRemoved().getEntries().get(0).getDescription()).isEqualTo("Remove new entry");
     }
 
@@ -136,11 +125,11 @@ class UpdateServiceTest {
       updateService.updateChangelog(entity, "Remove new entry", CategoryType.REMOVED, "1.0.0", "2024-07-22");
 
       // Then
-      assertThat(entity.getVersions()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(2);
       assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
       assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo("1.0.0");
       assertThat(entity.getVersions().get(1).getDate()).isEqualTo("2024-07-22");
-      assertThat(entity.getVersions().get(1).getRemoved().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(1).getRemoved().getEntries()).hasSize(1);
       assertThat(entity.getVersions().get(1).getRemoved().getEntries().get(0).getDescription()).isEqualTo("Remove new entry");
     }
 
@@ -179,7 +168,7 @@ class UpdateServiceTest {
       updateService.createNewRelease(entity, ReleaseType.MAJOR);
 
       // Then
-      assertThat(entity.getVersions()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(1);
       assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo("1.0.1");
     }
 
@@ -196,7 +185,7 @@ class UpdateServiceTest {
       updateService.createNewRelease(entity, ReleaseType.MAJOR);
 
       // Then
-      assertThat(entity.getVersions()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(2);
       assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
       assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo("1.0.1");
     }
@@ -214,7 +203,7 @@ class UpdateServiceTest {
       updateService.createNewRelease(entity, release);
 
       // Then
-      assertThat(entity.getVersions()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(2);
       assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
       assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo(expectedReleaseVersion);
     }
@@ -234,7 +223,7 @@ class UpdateServiceTest {
       updateService.createNewRelease(entity, release);
 
       // Then
-      assertThat(entity.getVersions()).hasSize(3);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(3);
       assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
       assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo(expectedReleaseVersion);
       assertThat(entity.getVersions().get(2).getReleaseVersion()).isEqualTo(oldReleaseVersion);
@@ -280,21 +269,21 @@ class UpdateServiceTest {
       updateService.createNewRelease(entity, release);
 
       // Then
-      assertThat(entity.getVersions()).hasSize(3);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(3);
       assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
-      assertThat(entity.getVersions().get(0).getAdded().getEntries()).isEmpty();
-      assertThat(entity.getVersions().get(0).getChanged().getEntries()).isEmpty();
-      assertThat(entity.getVersions().get(0).getFixed().getEntries()).isEmpty();
-      assertThat(entity.getVersions().get(0).getRemoved().getEntries()).isEmpty();
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(0).getAdded().getEntries()).isEmpty();
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(0).getChanged().getEntries()).isEmpty();
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(0).getFixed().getEntries()).isEmpty();
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(0).getRemoved().getEntries()).isEmpty();
 
       assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo(expectedReleaseVersion);
-      assertThat(entity.getVersions().get(1).getAdded().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(1).getAdded().getEntries()).hasSize(1);
       assertThat(entity.getVersions().get(1).getAdded().getEntries()).isEqualTo(Arrays.asList(entryAdded));
-      assertThat(entity.getVersions().get(1).getChanged().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(1).getChanged().getEntries()).hasSize(1);
       assertThat(entity.getVersions().get(1).getChanged().getEntries()).isEqualTo(Arrays.asList(entryChanged));
-      assertThat(entity.getVersions().get(1).getFixed().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(1).getFixed().getEntries()).hasSize(1);
       assertThat(entity.getVersions().get(1).getFixed().getEntries()).isEqualTo(Arrays.asList(entryFixed));
-      assertThat(entity.getVersions().get(1).getRemoved().getEntries()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(1).getRemoved().getEntries()).hasSize(2);
       assertThat(entity.getVersions().get(1).getRemoved().getEntries()).isEqualTo(Arrays.asList(entryRemoved01, entryRemoved02));
 
       assertThat(entity.getVersions().get(2).getReleaseVersion()).isEqualTo("1.0.1");
@@ -312,7 +301,7 @@ class UpdateServiceTest {
       updateService.createNewRelease(entity, ReleaseType.MINOR);
 
       // Then
-      assertThat(entity.getVersions()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(2);
       assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
       assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo("0.1.0");
     }
@@ -329,7 +318,7 @@ class UpdateServiceTest {
       updateService.createNewRelease(entity, ReleaseType.PATCH);
 
       // Then
-      assertThat(entity.getVersions()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(2);
       assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
       assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo("0.0.1");
     }
@@ -346,7 +335,7 @@ class UpdateServiceTest {
       updateService.createNewRelease(entity, ReleaseType.MINOR);
 
       // Then
-      assertThat(entity.getVersions()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(2);
       assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
       assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo("0.1.0");
     }
