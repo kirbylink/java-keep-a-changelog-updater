@@ -1,7 +1,7 @@
 package de.dddns.kirbylink.keepachangelogupdater;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.stream.Stream;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,13 +24,13 @@ import de.dddns.kirbylink.keepachangelogupdater.service.CommandLineService;
 
 class KeepAChangelogUpdaterApplicationIntegrationTest {
 
-  private static String PROGRAM;
+  private static String program;
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
     var jarPath = CommandLineService.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
     var optionalJarName = new File(jarPath).getName();
-    PROGRAM = optionalJarName.endsWith(".jar") ? optionalJarName : "keep-a-changelog-updater-x.y.z-jar-with-dependencies.jar";
+    program = optionalJarName.endsWith(".jar") ? optionalJarName : "keep-a-changelog-updater-x.y.z-jar-with-dependencies.jar";
   }
 
   @Test
@@ -66,7 +67,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
            -h,--help             Print this help message
            -s,--scenario <arg>   Scenario to execute: create, add-entry, release
           """;
-      var expectedOutput = String.format(stringFormat, PROGRAM);
+      var expectedOutput = String.format(stringFormat, program);
 
       try {
         // When
@@ -95,7 +96,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
            -h,--help             Print this help message
            -s,--scenario <arg>   Scenario to execute: create, add-entry, release
           """;
-      var expectedOutput = String.format(stringFormat, PROGRAM);
+      var expectedOutput = String.format(stringFormat, program);
 
       try {
         // When
@@ -144,7 +145,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
            -t,--category <arg>      Category for the new entry (Added, Changed,
                                     Fixed, Removed)
           """;
-      var expectedOutputCreate = String.format(stringFormatCreate, PROGRAM);
+      var expectedOutputCreate = String.format(stringFormatCreate, program);
 
       var stringFormatAddEntry = """
          usage: java -jar %s -s add-entry -c | -o <arg> -d <arg> -i <arg>  -t <arg> [-v <arg>]
@@ -156,7 +157,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
                                    Fixed, Removed)
           -v,--version <arg>       Existing release version (default: Unreleased)
          """;
-      var expectedOutputAddEntry = String.format(stringFormatAddEntry, PROGRAM);
+      var expectedOutputAddEntry = String.format(stringFormatAddEntry, program);
 
       var stringFormatRelease = """
          usage: java -jar %s -s release -b <arg> -c | -o <arg> -i <arg>  -r <arg> -rt <arg>
@@ -167,7 +168,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
           -r,--repository <arg>      Repository URL for link generation
           -rt,--release-type <arg>   Release type: major, minor, patch
          """;
-      var expectedOutputRelease = String.format(stringFormatRelease, PROGRAM);
+      var expectedOutputRelease = String.format(stringFormatRelease, program);
 
       return Stream.of(
               Arguments.of("create", expectedOutputCreate),
@@ -198,7 +199,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
            -h,--help             Print this help message
            -s,--scenario <arg>   Scenario to execute: create, add-entry, release
           """;
-      var expectedOutput = String.format(stringFormat, PROGRAM);
+      var expectedOutput = String.format(stringFormat, program);
 
       try {
         // When
@@ -273,7 +274,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       KeepAChangelogUpdaterApplication.main(args);
 
       // Then
-      assertThat(targetPath).exists()
+      AssertionsForInterfaceTypes.assertThat(targetPath).exists()
         .binaryContent().isEqualTo(expectedOutput.getBytes());
 
       deleteDirectoryRecursively(temporaryFolder);
@@ -344,7 +345,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       KeepAChangelogUpdaterApplication.main(args);
 
       // Then
-      assertThat(targetPath).exists()
+      AssertionsForInterfaceTypes.assertThat(targetPath).exists()
         .binaryContent().isEqualTo(expectedOutput.getBytes());
 
       deleteDirectoryRecursively(temporaryFolder);
@@ -415,7 +416,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       KeepAChangelogUpdaterApplication.main(args);
 
       // Then
-      assertThat(targetPath).exists()
+      AssertionsForInterfaceTypes.assertThat(targetPath).exists()
         .binaryContent().isEqualTo(expectedOutput.getBytes());
 
       deleteDirectoryRecursively(temporaryFolder);
@@ -561,7 +562,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       KeepAChangelogUpdaterApplication.main(args);
 
       // Then
-      assertThat(targetPath).exists()
+      AssertionsForInterfaceTypes.assertThat(targetPath).exists()
         .binaryContent().isEqualTo(expectedOutput.getBytes());
 
       deleteDirectoryRecursively(temporaryFolder);
@@ -665,7 +666,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       KeepAChangelogUpdaterApplication.main(args);
 
       // Then
-      assertThat(inputAndOutputPath).exists()
+      AssertionsForInterfaceTypes.assertThat(inputAndOutputPath).exists()
         .binaryContent().isEqualTo(expectedOutput.getBytes());
 
       deleteDirectoryRecursively(temporaryFolder);
