@@ -1,0 +1,17 @@
+majorTypes: []
+minorTypes:
+  - feat
+patchTypes:
+  - fix
+  - build(deps)
+  - perf
+addedTypes:
+  - feat
+fixedTypes:
+  - fix
+  - fix(security)
+changedTypes:
+  - perf
+  - build(deps)
+removedTypes:
+  - chore(removed)

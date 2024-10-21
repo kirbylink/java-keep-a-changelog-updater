@@ -43,7 +43,6 @@ class FilesUtilityTest {
 
   @Test
   void testReadFileAsString_WhenFileIsRead_ThenContentIsEqualToChanglogString() throws IOException {
-
     // Given
     var filePath = "src/test/resources/CHANGELOG.md";
 
@@ -56,7 +55,6 @@ class FilesUtilityTest {
 
   @Test
   void testWriteStringAsFile_WhenStringAndPathToOutputIsGiven_ThenStringWillBeWrittenToFile() throws IOException {
-
     // Given
     var temporaryFolder = Files.createTempDirectory("target");
     var targetPath = temporaryFolder.resolve("CHANGELOG.md");

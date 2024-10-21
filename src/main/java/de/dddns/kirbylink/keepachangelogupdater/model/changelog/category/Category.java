@@ -1,8 +1,8 @@
-package de.dddns.kirbylink.keepachangelogupdater.model.category;
+package de.dddns.kirbylink.keepachangelogupdater.model.changelog.category;
 
 import java.util.ArrayList;
 import java.util.List;
-import de.dddns.kirbylink.keepachangelogupdater.model.VersionEntry;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.VersionEntry;
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

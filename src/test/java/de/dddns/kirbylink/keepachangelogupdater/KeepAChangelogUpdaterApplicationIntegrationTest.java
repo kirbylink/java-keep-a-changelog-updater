@@ -35,7 +35,6 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
   @Test
   void testKeepAChangelogUpdaterApplication() {
-
     // Given
 
     // When
@@ -65,7 +64,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       var stringFormat = """
           usage: java -jar %s -h | -s <arg>
            -h,--help             Print this help message
-           -s,--scenario <arg>   Scenario to execute: create, add-entry, release
+           -s,--scenario <arg>   Scenario to execute: create, add-entry, release, auto-generate
           """;
       var expectedOutput = String.format(stringFormat, program);
 
@@ -75,7 +74,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
         // Then
         var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-        assertThat(normalizeOutput(consoleOutput)).isNotEmpty().isEqualTo(normalizeOutput(expectedOutput));
+        assertThat(normalizeOutput(consoleOutput)).isNotEmpty().contains(normalizeOutput(expectedOutput));
       } finally {
         System.setOut(originalOut);
       }
@@ -94,7 +93,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       var stringFormat = """
           usage: java -jar %s -h | -s <arg>
            -h,--help             Print this help message
-           -s,--scenario <arg>   Scenario to execute: create, add-entry, release
+           -s,--scenario <arg>   Scenario to execute: create, add-entry, release, auto-generate
           """;
       var expectedOutput = String.format(stringFormat, program);
 
@@ -127,7 +126,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
         // Then
         var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-        assertThat(normalizeOutput(consoleOutput)).isNotEmpty().isEqualTo(normalizeOutput(expectedOutput));
+        assertThat(normalizeOutput(consoleOutput)).isNotEmpty().contains(normalizeOutput(expectedOutput));
       } finally {
         System.setOut(originalOut);
       }
@@ -213,465 +212,779 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       }
     }
 
-    @Test
-    void testMain_WhenMethodWithScenarioCreateAndAllRequiredArgsIsCalled_ThenNewChangelogIsPrinted() throws URISyntaxException {
+    @Nested
+    @DisplayName("Test the scenario 'create'")
+    class TestScenarioCreate {
 
-      // Given
-      var args = new String[] {"-s", "create", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
-      var byteArrayOutputStream = new ByteArrayOutputStream();
-      var printStream = new PrintStream(byteArrayOutputStream);
-      var originalOut = System.out;
-      System.setOut(printStream);
+      @Test
+      void testMain_WhenMethodWithScenarioCreateAndAllRequiredArgsIsCalled_ThenNewChangelogIsPrinted() throws URISyntaxException {
 
-      var expectedOutput = """
-          # Changelog
+        // Given
+        var args = new String[] {"-s", "create", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
 
-          All notable changes to this project will be documented in this file.
+        var expectedOutput = """
+            # Changelog
 
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+            All notable changes to this project will be documented in this file.
 
-          ## [Unreleased]
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-          [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-          """;
+            ## [Unreleased]
 
-      try {
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            """;
+
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
+
+      @Test
+      void testMain_WhenMethodWithScenarioCreateAndAllRequiredArgsIsCalled_ThenNewChangelogIsSaved() throws URISyntaxException, IOException {
+
+        // Given
+        var temporaryFolder = Files.createTempDirectory("target");
+        var targetPath = temporaryFolder.resolve("CHANGELOG.md");
+        var filePath = targetPath.toFile().getAbsolutePath();
+        var args = new String[] {"-s", "create", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-o", filePath};
+
+        var expectedOutput = """
+            # Changelog
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            ## [Unreleased]
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            """;
+
         // When
         KeepAChangelogUpdaterApplication.main(args);
 
         // Then
-        var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-        assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
-      } finally {
-        System.setOut(originalOut);
+        AssertionsForInterfaceTypes.assertThat(targetPath).exists()
+          .binaryContent().isEqualTo(expectedOutput.getBytes());
+
+        deleteDirectoryRecursively(temporaryFolder);
       }
-    }
 
-    @Test
-    void testMain_WhenMethodWithScenarioCreateAndAllRequiredArgsIsCalled_ThenNewChangelogIsSaved() throws URISyntaxException, IOException {
+      @Test
+      void testMain_WhenMethodWithScenarioCreateWithAllArgsIsCalled_ThenNewChangelogWithEntryIsPrinted() throws URISyntaxException {
 
-      // Given
-      var temporaryFolder = Files.createTempDirectory("target");
-      var targetPath = temporaryFolder.resolve("CHANGELOG.md");
-      var filePath = targetPath.toFile().getAbsolutePath();
-      var args = new String[] {"-s", "create", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-o", filePath};
+        // Given
+        var args = new String[] {"-s", "create", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-d", "Add new entry", "-t", "added", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
 
-      var expectedOutput = """
-          # Changelog
+        var expectedOutput = """
+            # Changelog
 
-          All notable changes to this project will be documented in this file.
+            All notable changes to this project will be documented in this file.
 
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-          ## [Unreleased]
+            ## [Unreleased]
+            ### Added
+            - Add new entry
 
-          [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-          """;
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            """;
 
-      // When
-      KeepAChangelogUpdaterApplication.main(args);
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
 
-      // Then
-      AssertionsForInterfaceTypes.assertThat(targetPath).exists()
-        .binaryContent().isEqualTo(expectedOutput.getBytes());
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
 
-      deleteDirectoryRecursively(temporaryFolder);
-    }
+      @Test
+      void testMain_WhenMethodWithScenarioCreateWithAllArgsIsCalled_ThenNewChangelogWithEntryIsSaved() throws URISyntaxException, IOException {
 
-    @Test
-    void testMain_WhenMethodWithScenarioCreateWithAllArgsIsCalled_ThenNewChangelogWithEntryIsPrinted() throws URISyntaxException {
+        // Given
+        var temporaryFolder = Files.createTempDirectory("target");
+        var targetPath = temporaryFolder.resolve("CHANGELOG.md");
+        var filePath = targetPath.toFile().getAbsolutePath();
+        var args = new String[] {"-s", "create", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-d", "Add new entry", "-t", "Added", "-o", filePath};
 
-      // Given
-      var args = new String[] {"-s", "create", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-d", "Add new entry", "-t", "added", "-c"};
-      var byteArrayOutputStream = new ByteArrayOutputStream();
-      var printStream = new PrintStream(byteArrayOutputStream);
-      var originalOut = System.out;
-      System.setOut(printStream);
+        var expectedOutput = """
+            # Changelog
 
-      var expectedOutput = """
-          # Changelog
+            All notable changes to this project will be documented in this file.
 
-          All notable changes to this project will be documented in this file.
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+            ## [Unreleased]
+            ### Added
+            - Add new entry
 
-          ## [Unreleased]
-          ### Added
-          - Add new entry
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            """;
 
-          [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-          """;
-
-      try {
         // When
         KeepAChangelogUpdaterApplication.main(args);
 
         // Then
-        var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-        assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
-      } finally {
-        System.setOut(originalOut);
+        AssertionsForInterfaceTypes.assertThat(targetPath).exists()
+          .binaryContent().isEqualTo(expectedOutput.getBytes());
+
+        deleteDirectoryRecursively(temporaryFolder);
       }
+
     }
 
-    @Test
-    void testMain_WhenMethodWithScenarioCreateWithAllArgsIsCalled_ThenNewChangelogWithEntryIsSaved() throws URISyntaxException, IOException {
+    @Nested
+    @DisplayName("Test the scenario 'add-entry'")
+    class TestScenarioAddEntry {
 
-      // Given
-      var temporaryFolder = Files.createTempDirectory("target");
-      var targetPath = temporaryFolder.resolve("CHANGELOG.md");
-      var filePath = targetPath.toFile().getAbsolutePath();
-      var args = new String[] {"-s", "create", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-d", "Add new entry", "-t", "Added", "-o", filePath};
+      @Test
+      void testMain_WhenMethodWithScenarioAddEntryAndAllRequiredArgsIsCalled_ThenNewEntryAddedToUnreleasedAndResultIsPrinted() throws URISyntaxException {
 
-      var expectedOutput = """
-          # Changelog
+        // Given
+        var args = new String[] {"-s", "add-entry", "-i", "src/test/resources/CHANGELOG-created.md", "-d", "Add new entry", "-t", "Added", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+         System.setOut(printStream);
 
-          All notable changes to this project will be documented in this file.
+        var expectedOutput = """
+            # Changelog
 
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+            All notable changes to this project will be documented in this file.
 
-          ## [Unreleased]
-          ### Added
-          - Add new entry
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-          [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-          """;
+            ## [Unreleased]
+            ### Added
+            - Add new entry
 
-      // When
-      KeepAChangelogUpdaterApplication.main(args);
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            """;
 
-      // Then
-      AssertionsForInterfaceTypes.assertThat(targetPath).exists()
-        .binaryContent().isEqualTo(expectedOutput.getBytes());
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
 
-      deleteDirectoryRecursively(temporaryFolder);
-    }
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
 
-    @Test
-    void testMain_WhenMethodWithScenarioAddEntryAndAllRequiredArgsIsCalled_ThenNewEntryAddedToUnreleasedAndResultIsPrinted() throws URISyntaxException {
+      @Test
+      void testMain_WhenMethodWithScenarioAddEntryAndAllRequiredArgsIsCalled_ThenNewEntryAddedToUnreleasedAndResultIsSaved() throws URISyntaxException, IOException {
 
-      // Given
-      var args = new String[] {"-s", "add-entry", "-i", "src/test/resources/CHANGELOG-created.md", "-d", "Add new entry", "-t", "Added", "-c"};
-      var byteArrayOutputStream = new ByteArrayOutputStream();
-      var printStream = new PrintStream(byteArrayOutputStream);
-      var originalOut = System.out;
-       System.setOut(printStream);
+        // Given
+        var temporaryFolder = Files.createTempDirectory("target");
+        var targetPath = temporaryFolder.resolve("CHANGELOG.md");
+        var filePath = targetPath.toFile().getAbsolutePath();
+        var args = new String[] {"-s", "add-entry", "-i", "src/test/resources/CHANGELOG-created.md", "-d", "Add new entry", "-t", "Added", "-o", filePath};
 
-      var expectedOutput = """
-          # Changelog
+        var expectedOutput = """
+            # Changelog
 
-          All notable changes to this project will be documented in this file.
+            All notable changes to this project will be documented in this file.
 
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-          ## [Unreleased]
-          ### Added
-          - Add new entry
+            ## [Unreleased]
+            ### Added
+            - Add new entry
 
-          [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-          """;
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            """;
 
-      try {
         // When
         KeepAChangelogUpdaterApplication.main(args);
 
         // Then
-        var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-        assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
-      } finally {
-        System.setOut(originalOut);
+        AssertionsForInterfaceTypes.assertThat(targetPath).exists()
+          .binaryContent().isEqualTo(expectedOutput.getBytes());
+
+        deleteDirectoryRecursively(temporaryFolder);
       }
+
+      @Test
+      void testMain_WhenMethodWithScenarioAddEntryWithSpecificVersionAndAllRequiredArgsIsCalled_ThenNewEntryAddedToSpecificVersionAndResultIsPrinted() throws URISyntaxException {
+
+        // Given
+        var args = new String[] {"-s", "add-entry", "-i", "src/test/resources/CHANGELOG-with-entries.md", "-v", "0.1.0", "-d", "Add new entry", "-t", "Added", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+         System.setOut(printStream);
+
+         var date = LocalDate.now().toString();
+         var stringFormat = """
+            # Changelog of some application
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            And there is some additional description.
+
+            ## [Unreleased]
+            ### Added
+            - Document the `convert()` method
+
+            ## [0.1.0] - %s
+            ### Added
+            - Add new entry
+
+            ### Changed
+            - Change structure of VersionEntity
+
+            ### Fixed
+            - Replace application name in MAKE.md file
+
+            ### Removed
+            - Remove unused method `parse()`
+            - Delete check for NullpointerException in `main()` method
+
+            ## [0.0.1] - 2024-06.30
+            ### Added
+            - Add initial files
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0
+            [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1
+            """;
+         var expectedOutput = String.format(stringFormat, date);
+
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
+
     }
 
-    @Test
-    void testMain_WhenMethodWithScenarioAddEntryAndAllRequiredArgsIsCalled_ThenNewEntryAddedToUnreleasedAndResultIsSaved() throws URISyntaxException, IOException {
+    @Nested
+    @DisplayName("Test the scenario 'release'")
+    class TestScenarioRelease {
 
-      // Given
-      var temporaryFolder = Files.createTempDirectory("target");
-      var targetPath = temporaryFolder.resolve("CHANGELOG.md");
-      var filePath = targetPath.toFile().getAbsolutePath();
-      var args = new String[] {"-s", "add-entry", "-i", "src/test/resources/CHANGELOG-created.md", "-d", "Add new entry", "-t", "Added", "-o", filePath};
+      @Test
+      void testMain_WhenMethodWithScenarioReleaseWithMajorAndAllRequiredArgsIsCalled_ThenNewMajorVersionCreatedAndResultIsPrinted() throws URISyntaxException {
 
-      var expectedOutput = """
-          # Changelog
+        // Given
+        var args = new String[] {"-s", "release", "-i", "src/test/resources/CHANGELOG-with-entry.md", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-rt", "major", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
 
-          All notable changes to this project will be documented in this file.
+        var date = LocalDate.now().toString();
+        var stringFormat = """
+            # Changelog
 
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+            All notable changes to this project will be documented in this file.
 
-          ## [Unreleased]
-          ### Added
-          - Add new entry
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-          [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-          """;
+            ## [Unreleased]
 
-      // When
-      KeepAChangelogUpdaterApplication.main(args);
+            ## [1.0.0] - %s
+            ### Added
+            - Add new entry
 
-      // Then
-      AssertionsForInterfaceTypes.assertThat(targetPath).exists()
-        .binaryContent().isEqualTo(expectedOutput.getBytes());
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
 
-      deleteDirectoryRecursively(temporaryFolder);
-    }
+            """;
 
+        var expectedOutput = String.format(stringFormat, date);
 
-    @Test
-    void testMain_WhenMethodWithScenarioAddEntryWithSpecificVersionAndAllRequiredArgsIsCalled_ThenNewEntryAddedToSpecificVersionAndResultIsPrinted() throws URISyntaxException {
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
 
-      // Given
-      var args = new String[] {"-s", "add-entry", "-i", "src/test/resources/CHANGELOG-with-entries.md", "-v", "0.1.0", "-d", "Add new entry", "-t", "Added", "-c"};
-      var byteArrayOutputStream = new ByteArrayOutputStream();
-      var printStream = new PrintStream(byteArrayOutputStream);
-      var originalOut = System.out;
-       System.setOut(printStream);
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
 
-       var date = LocalDate.now().toString();
-       var stringFormat = """
-          # Changelog of some application
+      @Test
+      void testMain_WhenMethodWithScenarioReleaseWithMajorAndAllRequiredArgsIsCalled_ThenNewMajorVersionCreatedAndResultIsSaved() throws URISyntaxException, IOException {
 
-          All notable changes to this project will be documented in this file.
+        // Given
+        var temporaryFolder = Files.createTempDirectory("target");
+        var targetPath = temporaryFolder.resolve("CHANGELOG.md");
+        var filePath = targetPath.toFile().getAbsolutePath();
+        var args = new String[] {"-s", "release", "-i", "src/test/resources/CHANGELOG-with-entry.md", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-rt", "major", "-o", filePath};
 
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+        var date = LocalDate.now().toString();
+        var stringFormat = """
+            # Changelog
 
-          And there is some additional description.
+            All notable changes to this project will be documented in this file.
 
-          ## [Unreleased]
-          ### Added
-          - Document the `convert()` method
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-          ## [0.1.0] - %s
-          ### Added
-          - Add new entry
+            ## [Unreleased]
 
-          ### Changed
-          - Change structure of VersionEntity
+            ## [1.0.0] - %s
+            ### Added
+            - Add new entry
 
-          ### Fixed
-          - Replace application name in MAKE.md file
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
+            """;
 
-          ### Removed
-          - Remove unused method `parse()`
-          - Delete check for NullpointerException in `main()` method
+        var expectedOutput = String.format(stringFormat, date);
 
-          ## [0.0.1] - 2024-06.30
-          ### Added
-          - Add initial files
-
-          [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-          [0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0
-          [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1
-          """;
-       var expectedOutput = String.format(stringFormat, date);
-
-      try {
         // When
         KeepAChangelogUpdaterApplication.main(args);
 
         // Then
-        var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-        assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
-      } finally {
-        System.setOut(originalOut);
+        AssertionsForInterfaceTypes.assertThat(targetPath).exists()
+          .binaryContent().isEqualTo(expectedOutput.getBytes());
+
+        deleteDirectoryRecursively(temporaryFolder);
       }
-    }
 
-    @Test
-    void testMain_WhenMethodWithScenarioReleaseWithMajorAndAllRequiredArgsIsCalled_ThenNewMajorVersionCreatedAndResultIsPrinted() throws URISyntaxException {
+      @Test
+      void testMain_WhenMethodWithScenarioReleaseWithPatchAndExistingVersionsAndAllRequiredArgsIsCalled_ThenNewPatchVersionCreatedAndResultIsPrinted() throws URISyntaxException {
 
-      // Given
-      var args = new String[] {"-s", "release", "-i", "src/test/resources/CHANGELOG-with-entry.md", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-rt", "major", "-c"};
-      var byteArrayOutputStream = new ByteArrayOutputStream();
-      var printStream = new PrintStream(byteArrayOutputStream);
-      var originalOut = System.out;
-      System.setOut(printStream);
+        // Given
+        var args = new String[] {"-s", "release", "-i", "src/test/resources/CHANGELOG-with-entries.md", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-rt", "patch", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
 
-      var date = LocalDate.now().toString();
-      var stringFormat = """
-          # Changelog
+        var date = LocalDate.now().toString();
+        var stringFormat = """
+                # Changelog of some application
 
-          All notable changes to this project will be documented in this file.
+                All notable changes to this project will be documented in this file.
 
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+                The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+                and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-          ## [Unreleased]
+                And there is some additional description.
 
-          ## [1.0.0] - %s
-          ### Added
-          - Add new entry
+                ## [Unreleased]
 
-          [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-          [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
+                ## [0.1.1] - %s
+                ### Added
+                - Document the `convert()` method
 
-          """;
+                ## [0.1.0] - 2024-07-20
+                ### Changed
+                - Change structure of VersionEntity
 
-      var expectedOutput = String.format(stringFormat, date);
+                ### Fixed
+                - Replace application name in MAKE.md file
 
-      try {
+                ### Removed
+                - Remove unused method `parse()`
+                - Delete check for NullpointerException in `main()` method
+
+                ## [0.0.1] - 2024-06.30
+                ### Added
+                - Add initial files
+
+                [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+                [0.1.1]: https://git.example.com:443/organization/repo.git/compare/0.1.0...0.1.1
+                [0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0
+                [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1
+                """;
+
+        var expectedOutput = String.format(stringFormat, date);
+
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
+
+      @Test
+      void testMain_WhenMethodWithScenarioReleaseWithMajorAndOutputWithoutPathIsCalled_ThenNewMajorVersionCreatedAndResultIsSavedAtInputFile() throws URISyntaxException, IOException {
+
+        // Given
+        var temporaryFolder = Files.createTempDirectory("target");
+        var inputAndOutputPath = temporaryFolder.resolve("CHANGELOG.md");
+        var filePath = inputAndOutputPath.toFile().getAbsolutePath();
+        var source = Path.of("src/test/resources/CHANGELOG-with-entry.md");
+        Files.copy(source, inputAndOutputPath);
+        var args = new String[] {"-s", "release", "-i", filePath, "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-rt", "major", "-o"};
+
+        var date = LocalDate.now().toString();
+        var stringFormat = """
+            # Changelog
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            ## [Unreleased]
+
+            ## [1.0.0] - %s
+            ### Added
+            - Add new entry
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
+            """;
+
+        var expectedOutput = String.format(stringFormat, date);
+
         // When
         KeepAChangelogUpdaterApplication.main(args);
 
         // Then
-        var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-        assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
-      } finally {
-        System.setOut(originalOut);
+        AssertionsForInterfaceTypes.assertThat(inputAndOutputPath).exists()
+          .binaryContent().isEqualTo(expectedOutput.getBytes());
+
+        deleteDirectoryRecursively(temporaryFolder);
+      }
+
+    }
+
+    @Nested
+    @DisplayName("Test the scenario 'auto-generate'")
+    class TestScenarioAutoGenerate {
+
+      @Test
+      void testMain_WhenMethodWithScenarioAutoGenerateWithoutAutoReleaseAndAllRequiredArgsIsCalled_ThenNewEntriesAreAddedToUnreleasedAndResultIsPrinted() throws URISyntaxException {
+
+        // Given
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log.txt", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+         System.setOut(printStream);
+
+        var expectedOutput = """
+            # Changelog
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            ## [Unreleased]
+            ### Added
+            - Implement git log parsing
+
+            ### Fixed
+            - Correct minor bug in parsing logic
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            """;
+
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
+
+      @Test
+      void testMain_WhenMethodWithScenarioAutoGenerateWithoutAutoReleaseAndAllRequiredArgsIsCalled_ThenNewEntriesAreAddedToWantedVersionAndResultIsPrinted() throws URISyntaxException {
+
+        // Given
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-with-entries.md", "-g", "src/test/resources/git-log-with-duplicated-entries-and-non-conventional-commits.txt", "-c", "-v", "0.1.0"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
+
+        var expectedOutput = """
+            # Changelog of some application
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            And there is some additional description.
+
+            ## [Unreleased]
+            ### Added
+            - Document the `convert()` method
+
+            ## [0.1.0] - 2024-07-20
+            ### Added
+            - Implement git log parsing
+
+            ### Changed
+            - Change structure of VersionEntity
+
+            ### Fixed
+            - Replace application name in MAKE.md file
+            - Correct minor bug in parsing logic
+
+            ### Removed
+            - Remove unused method `parse()`
+            - Delete check for NullpointerException in `main()` method
+
+            ## [0.0.1] - 2024-06.30
+            ### Added
+            - Add initial files
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0
+            [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1
+            """;
+
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
+
+      @Test
+      void testMain_WhenMethodWithScenarioAutoGenerateWithoutAutoReleaseAndAllRequiredArgsIsCalled_ThenNewEntriesAreAddedWithBreakingChangeAndResultIsPrinted() throws URISyntaxException {
+
+        // Given
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-breaking-changes.txt", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
+
+        var expectedOutput = """
+            # Changelog
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            ## [Unreleased]
+            ### Added
+            - Implement git log parsing
+
+            ### Fixed
+            - Correct minor bug in parsing logic
+
+            BREAKING CHANGE: Additional Multiple lines
+            that shows that there are breaking changes.
+
+            Some Multiple lines
+            that shows that there are breaking changes.
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            """;
+
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
+
+      @Test
+      void testMain_WhenMethodWithScenarioAutoGenerateWithAutoReleaseAndAllRequiredArgsIsCalled_ThenNewReleaseIsCreatedAndResultIsPrinted() throws URISyntaxException {
+
+        // Given
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log.txt", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
+
+        var date = LocalDate.now().toString();
+        var stringFormat = """
+            # Changelog
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            ## [Unreleased]
+
+            ## [0.1.0] - %s
+            ### Added
+            - Implement git log parsing
+
+            ### Fixed
+            - Correct minor bug in parsing logic
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [0.1.0]: https://git.example.com:443/organization/repo.git/releases/tag/0.1.0
+            """;
+
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+          var expectedOutput = String.format(stringFormat, date);
+
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
+
+        @Test
+        void testMain_WhenMethodWithScenarioAutoGenerateWithAutoReleaseAndBreakingChangeAndAllRequiredArgsIsCalled_ThenNewReleaseIsCreatedAndResultIsPrinted() throws URISyntaxException {
+
+          // Given
+          var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-breaking-changes.txt", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
+          var byteArrayOutputStream = new ByteArrayOutputStream();
+          var printStream = new PrintStream(byteArrayOutputStream);
+          var originalOut = System.out;
+          System.setOut(printStream);
+
+          var date = LocalDate.now().toString();
+          var stringFormat = """
+            # Changelog
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            ## [Unreleased]
+
+            ## [1.0.0] - %s
+            ### Added
+            - Implement git log parsing
+
+            ### Fixed
+            - Correct minor bug in parsing logic
+
+            BREAKING CHANGE: Additional Multiple lines
+            that shows that there are breaking changes.
+
+            Some Multiple lines
+            that shows that there are breaking changes.
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
+            """;
+
+          try {
+            // When
+            KeepAChangelogUpdaterApplication.main(args);
+            var expectedOutput = String.format(stringFormat, date);
+
+            // Then
+            var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+            assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+          } finally {
+            System.setOut(originalOut);
+          }
+      }
+
+      @Test
+      void testMain_WhenMethodWithScenarioAutoGenerateWithAutoReleaseAndCustomProperties_ThenMajorReleaseWillBeBuildAndCommitsUnderOtherCategories() throws URISyntaxException {
+
+        // Given
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-for-properties.txt", "-p", "src/test/resources/properties-test.yaml", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
+
+        var date = LocalDate.now().toString();
+        var stringFormat = """
+            # Changelog
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            ## [Unreleased]
+
+            ## [1.0.0] - %s
+            ### Added
+            - Will be under Added
+
+            ### Changed
+            - Will trigger a major release and under Changed
+
+            ### Fixed
+            - Will be under Fixed
+
+            ### Removed
+            - Will be under Removed
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
+            """;
+
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+          var expectedOutput = String.format(stringFormat, date);
+
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
       }
     }
-
-    @Test
-    void testMain_WhenMethodWithScenarioReleaseWithMajorAndAllRequiredArgsIsCalled_ThenNewMajorVersionCreatedAndResultIsSaved() throws URISyntaxException, IOException {
-
-      // Given
-      var temporaryFolder = Files.createTempDirectory("target");
-      var targetPath = temporaryFolder.resolve("CHANGELOG.md");
-      var filePath = targetPath.toFile().getAbsolutePath();
-      var args = new String[] {"-s", "release", "-i", "src/test/resources/CHANGELOG-with-entry.md", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-rt", "major", "-o", filePath};
-
-      var date = LocalDate.now().toString();
-      var stringFormat = """
-          # Changelog
-
-          All notable changes to this project will be documented in this file.
-
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-          ## [Unreleased]
-
-          ## [1.0.0] - %s
-          ### Added
-          - Add new entry
-
-          [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-          [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
-          """;
-
-      var expectedOutput = String.format(stringFormat, date);
-
-      // When
-      KeepAChangelogUpdaterApplication.main(args);
-
-      // Then
-      AssertionsForInterfaceTypes.assertThat(targetPath).exists()
-        .binaryContent().isEqualTo(expectedOutput.getBytes());
-
-      deleteDirectoryRecursively(temporaryFolder);
-    }
-
-    @Test
-    void testMain_WhenMethodWithScenarioReleaseWithPatchAndExistingVersionsAndAllRequiredArgsIsCalled_ThenNewPatchVersionCreatedAndResultIsPrinted() throws URISyntaxException {
-
-      // Given
-      var args = new String[] {"-s", "release", "-i", "src/test/resources/CHANGELOG-with-entries.md", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-rt", "patch", "-c"};
-      var byteArrayOutputStream = new ByteArrayOutputStream();
-      var printStream = new PrintStream(byteArrayOutputStream);
-      var originalOut = System.out;
-      System.setOut(printStream);
-
-      var date = LocalDate.now().toString();
-      var stringFormat = """
-              # Changelog of some application
-
-              All notable changes to this project will be documented in this file.
-
-              The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-              and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-              And there is some additional description.
-
-              ## [Unreleased]
-
-              ## [0.1.1] - %s
-              ### Added
-              - Document the `convert()` method
-
-              ## [0.1.0] - 2024-07-20
-              ### Changed
-              - Change structure of VersionEntity
-
-              ### Fixed
-              - Replace application name in MAKE.md file
-
-              ### Removed
-              - Remove unused method `parse()`
-              - Delete check for NullpointerException in `main()` method
-
-              ## [0.0.1] - 2024-06.30
-              ### Added
-              - Add initial files
-
-              [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-              [0.1.1]: https://git.example.com:443/organization/repo.git/compare/0.1.0...0.1.1
-              [0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0
-              [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1
-              """;
-
-      var expectedOutput = String.format(stringFormat, date);
-
-      try {
-        // When
-        KeepAChangelogUpdaterApplication.main(args);
-
-        // Then
-        var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-        assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
-      } finally {
-        System.setOut(originalOut);
-      }
-    }
-
-    @Test
-    void testMain_WhenMethodWithScenarioReleaseWithMajorAndOutputWithoutPathIsCalled_ThenNewMajorVersionCreatedAndResultIsSavedAtInputFile() throws URISyntaxException, IOException {
-
-      // Given
-      var temporaryFolder = Files.createTempDirectory("target");
-      var inputAndOutputPath = temporaryFolder.resolve("CHANGELOG.md");
-      var filePath = inputAndOutputPath.toFile().getAbsolutePath();
-      var source = Path.of("src/test/resources/CHANGELOG-with-entry.md");
-      Files.copy(source, inputAndOutputPath);
-      var args = new String[] {"-s", "release", "-i", filePath, "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-rt", "major", "-o"};
-
-      var date = LocalDate.now().toString();
-      var stringFormat = """
-          # Changelog
-
-          All notable changes to this project will be documented in this file.
-
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-          ## [Unreleased]
-
-          ## [1.0.0] - %s
-          ### Added
-          - Add new entry
-
-          [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-          [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
-          """;
-
-      var expectedOutput = String.format(stringFormat, date);
-
-      // When
-      KeepAChangelogUpdaterApplication.main(args);
-
-      // Then
-      AssertionsForInterfaceTypes.assertThat(inputAndOutputPath).exists()
-        .binaryContent().isEqualTo(expectedOutput.getBytes());
-
-      deleteDirectoryRecursively(temporaryFolder);
-    }
-
   }
 
   @Nested
@@ -688,7 +1001,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       var originalOut = System.out;
       System.setOut(printStream);
 
-      var expectedOutput = "Could not read file: invalid/path";
+      var expectedOutput = "Error occurred during execution: invalid/path";
 
       try {
         // When
@@ -712,7 +1025,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       var originalOut = System.out;
       System.setOut(printStream);
 
-      var expectedOutput = "Could not read file: invalid/path";
+      var expectedOutput = "Error occurred during execution: invalid/path";
 
       try {
         // When

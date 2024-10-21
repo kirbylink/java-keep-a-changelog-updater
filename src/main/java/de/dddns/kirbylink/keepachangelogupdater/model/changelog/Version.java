@@ -1,13 +1,13 @@
-package de.dddns.kirbylink.keepachangelogupdater.model;
+package de.dddns.kirbylink.keepachangelogupdater.model.changelog;
 
 import java.util.Arrays;
 import java.util.Objects;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.Category;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryAdded;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryChanged;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryFixed;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryRemoved;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryType;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.Category;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -30,6 +30,9 @@ public class Version {
   private final CategoryFixed fixed = CategoryFixed.builder().build();
   @Default
   private final CategoryRemoved removed = CategoryRemoved.builder().build();
+  @Setter
+  @Default
+  private String breakingChange = "";
 
   public Category getCategory(CategoryType type) {
     return Arrays.asList(added, changed, fixed, removed).stream()
@@ -37,6 +40,10 @@ public class Version {
       .filter(category -> category.getType().equals(type))
       .findFirst()
       .orElse(null);
+  }
+
+  public boolean hasBreakingChange() {
+    return breakingChange != null && !breakingChange.isBlank();
   }
 
   @Override
@@ -65,6 +72,10 @@ public class Version {
         fixed.getEntries().isEmpty() &&
         removed.getEntries().isEmpty()) {
       stringBuilder.append("\n");
+    }
+
+    if (!breakingChange.isEmpty()) {
+      stringBuilder.append("BREAKING CHANGE: " + breakingChange + "\n\n");
     }
     return stringBuilder.toString();
   }

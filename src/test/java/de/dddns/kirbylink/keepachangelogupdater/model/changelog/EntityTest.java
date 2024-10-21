@@ -1,20 +1,19 @@
-package de.dddns.kirbylink.keepachangelogupdater.model;
+package de.dddns.kirbylink.keepachangelogupdater.model.changelog;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.util.Arrays;
 import java.util.Collections;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.Test;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryAdded;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryChanged;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryFixed;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryRemoved;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
 
 class EntityTest {
 
   @Test
   void test_WhenEntityIsCreatedWithAllFields_ThenEntityContainsHeaderVersionsAndFooter() {
-
     // Given
     var header = EntityHeader.builder().build();
 

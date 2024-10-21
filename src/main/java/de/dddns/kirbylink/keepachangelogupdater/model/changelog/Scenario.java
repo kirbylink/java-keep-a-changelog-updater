@@ -1,4 +1,4 @@
-package de.dddns.kirbylink.keepachangelogupdater.model;
+package de.dddns.kirbylink.keepachangelogupdater.model.changelog;
 
 import java.util.Arrays;
 import lombok.Getter;
@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum Scenario {
   CREATE("create"),
   ADD_ENTRY("add-entry"),
-  RELEASE("release");
+  RELEASE("release"),
+  AUTO_GENERATE("auto-generate");
 
   @Getter
   private final String value;
