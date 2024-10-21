@@ -21,7 +21,7 @@ public class GitLogParser {
       \\s*(.*?)(?=\\n\\ncommit|$)
       """, Pattern.DOTALL);
 
-  private static final Pattern CONVENTIONAL_COMMIT_MESSAGE_PATTERN = Pattern.compile("^(\\w+)(?:\\(([^)]+)\\))?:\\s+(.*)$");
+  private static final Pattern CONVENTIONAL_COMMIT_MESSAGE_PATTERN = Pattern.compile("^(\\w+)(?:\\(([^)]+)\\))?(!)?:\\s+(.*)$");
 
   public List<String> splitGitLog(String gitLog) {
     return Arrays.asList(gitLog.split("(?=commit)"));
@@ -68,9 +68,11 @@ public class GitLogParser {
   }
 
   private Commit parseConventionalCommitMessage(Matcher conventionalCommitMessageMatcher, String[] messageLines, String hashCode) {
-    var type = conventionalCommitMessageMatcher.group(1);
+    var type = new StringBuilder();
+    type.append(conventionalCommitMessageMatcher.group(1));
     var optionalScope = conventionalCommitMessageMatcher.group(2);
-    var description = conventionalCommitMessageMatcher.group(3);
+    var breakingChangeFlag = conventionalCommitMessageMatcher.group(3);
+    var description = conventionalCommitMessageMatcher.group(4);
 
     var body = messageLines.length > 1 ? trimBodyLines(messageLines[1].trim()) : null;
 
@@ -79,13 +81,22 @@ public class GitLogParser {
     log.trace("Hash: {}", hashCode);
     log.trace("Type: {}", type);
     log.trace("Optional Scope: {}", optionalScope);
+    log.trace("BreakingChange Flag: {}", breakingChangeFlag);
     log.trace("Description: {}", description);
     log.trace("Body: {}", body);
     log.trace("BreakingChange: {}", breakingChange);
 
+    if (optionalScope != null && !optionalScope.isEmpty()) {
+      type = type.append("(").append(optionalScope).append(")");
+    }
+
+    if ("!".equals(breakingChangeFlag)) {
+      type = type.append(breakingChangeFlag);
+    }
+
     return Commit.builder()
         .hashCode(hashCode)
-        .type(type)
+        .type(type.toString())
         .description(description)
         .body(body)
         .breakingChange(breakingChange)

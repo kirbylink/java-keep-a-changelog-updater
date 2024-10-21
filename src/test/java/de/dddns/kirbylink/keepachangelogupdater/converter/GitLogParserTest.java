@@ -67,6 +67,28 @@ class GitLogParserTest {
     }
 
     @Test
+    void testParseGitLog_WhenGitLogContainsConventionalCommitWithScope_ThenCommitObjectWithScopeInTypeIsReturned() {
+      // Given
+      var gitCommit = """
+                commit 1adc832ebc22aee29f468c21e4b0ba1c7b868216
+                Author: david <david@phoenix.ipv64.de>
+                Date:   Sun Oct 20 17:30:31 2024 +0200
+
+                    build(deps): Update Maven dependencies
+
+                """;
+
+      // When
+      var gitLogParser = new GitLogParser();
+      var commit = gitLogParser.parseGitCommit(gitCommit);
+
+      // Then
+      assertThat(commit.getHashCode()).isEqualTo("1adc832ebc22aee29f468c21e4b0ba1c7b868216");
+      assertThat(commit.getType()).isEqualTo("build(deps)");
+      assertThat(commit.getDescription()).isEqualTo("Update Maven dependencies");
+    }
+
+    @Test
     void testParseGitLog_WhenGitCommitDoesNotContainConventionalCommit_ThenNullIsReturned() {
       // Given
       var gitCommit = """
@@ -106,6 +128,26 @@ class GitLogParserTest {
 
         // Then
         assertThat(commit.getBreakingChange()).isEqualTo("This changes the API");
+    }
+
+    @Test
+    void testParseGitLog_WhenMessageContainsScopeAndBreakingChange_ThenBreakingChangeIsSavedInCommit() {
+      // Given
+      var gitCommit = """
+                commit 91b9a52a7c655d356289c2607d32a2e1a97277c2
+                Author: kirbylink <kirbylink@github.com>
+                Date:   Thu Oct 3 13:43:47 2024 +0200
+
+                    feat(api)!: Implement git log parsing
+
+                """;
+
+      // When
+      var gitLogParser = new GitLogParser();
+      var commit = gitLogParser.parseGitCommit(gitCommit);
+
+      // Then
+      assertThat(commit.hasBreakingChange()).isTrue();
     }
 
     @Test

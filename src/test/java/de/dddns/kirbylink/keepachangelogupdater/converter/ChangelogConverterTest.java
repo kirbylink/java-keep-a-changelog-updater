@@ -139,7 +139,7 @@ class ChangelogConverterTest {
 
           BREAKING CHANGE: Some breaking changes.
           Some description of the first breaking change.
-          
+
           Another breaking change information.
 
           [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
@@ -381,7 +381,7 @@ class ChangelogConverterTest {
 
           BREAKING CHANGE: Some breaking changes.
           Some description of the first breaking change.
-          
+
           Another breaking change information.
 
           ## [v0.0.1] - 2024-06-01
