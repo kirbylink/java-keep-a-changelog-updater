@@ -1,0 +1,11 @@
+commit 91b9a52a7c655d356289c2607d32a2e1a97277c2
+Author: kirbylink <kirbylink@github.com>
+Date:   Thu Oct 3 13:43:47 2024 +0200
+
+    feat: Implement git log parsing
+
+commit 31e22d05c93b4e2c7ab1b98c6beec4e6ac86ed72
+Author: kirbylink <kirbylink@github.com>
+Date:   Thu Oct 3 13:42:47 2024 +0200
+
+    fix: Correct minor bug in parsing logic

@@ -1,4 +1,4 @@
-package de.dddns.kirbylink.keepachangelogupdater.model;
+package de.dddns.kirbylink.keepachangelogupdater.model.changelog;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -9,17 +9,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class ReleaseTypeTest {
+class ScenarioTest {
 
   @ParameterizedTest
-  @CsvSource(value = {"major", "minor", "patch", "Major", "MINOR", "paTCh"})
+  @CsvSource(value = {"create", "add-entry", "release", "Create", "ADD-ENTRY", "reLeaSe"})
   void testFromValue_WhenValidValuesAreGiven_ThenNoExceptionWillBeThrown(String value) {
-
     // Given
 
     // When
     var throwAbleMethod = catchThrowable(() -> {
-      ReleaseType.fromValue(value);
+      Scenario.fromValue(value);
     });
 
     // Then
@@ -28,13 +27,12 @@ class ReleaseTypeTest {
 
   @Test
   void testFromValue_WhenInvalidValuesAreGiven_ThenIllegalArgumentExceptionWillBeThrown() {
-
     // Given
     var value = "invalidValue";
 
     // When
     var throwAbleMethod = catchThrowable(() -> {
-      ReleaseType.fromValue(value);
+      Scenario.fromValue(value);
     });
 
     // Then
@@ -43,12 +41,11 @@ class ReleaseTypeTest {
 
   @ParameterizedTest
   @MethodSource ("provideArgumentsForGetValueMethod")
-  void testGetValue(ReleaseType releaseType, String expectedValue) {
-
+  void testGetValue(Scenario scenario, String expectedValue) {
     // Given
 
     // When
-    var actualValue = releaseType.getValue();
+    var actualValue = scenario.getValue();
 
     // Then
     assertThat(actualValue).isEqualTo(expectedValue);
@@ -56,9 +53,9 @@ class ReleaseTypeTest {
 
   private static Stream<Arguments> provideArgumentsForGetValueMethod() {
     return Stream.of(
-            Arguments.of(ReleaseType.MAJOR, "major"),
-            Arguments.of(ReleaseType.MINOR, "minor"),
-            Arguments.of(ReleaseType.PATCH, "patch")
+            Arguments.of(Scenario.CREATE, "create"),
+            Arguments.of(Scenario.ADD_ENTRY, "add-entry"),
+            Arguments.of(Scenario.RELEASE, "release")
     );
   }
 }

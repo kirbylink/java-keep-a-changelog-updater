@@ -4,15 +4,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
-import de.dddns.kirbylink.keepachangelogupdater.model.Entity;
-import de.dddns.kirbylink.keepachangelogupdater.model.ReleaseType;
-import de.dddns.kirbylink.keepachangelogupdater.model.Version;
-import de.dddns.kirbylink.keepachangelogupdater.model.VersionEntry;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryAdded;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryChanged;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryFixed;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryRemoved;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryType;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.Entity;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.ReleaseType;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.Version;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.VersionEntry;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryType;
+import de.dddns.kirbylink.keepachangelogupdater.utility.VersionUtility;
 
 public class UpdateService {
 
@@ -22,7 +23,7 @@ public class UpdateService {
 
     var entry = VersionEntry.builder().description(description).build();
 
-    var existingVersion = entity.getVersions().stream().filter(version -> version.getReleaseVersion().equals(releaseVersion)).findFirst();
+    var existingVersion = VersionUtility.getOptinalVersion(entity, releaseVersion);
 
     if (existingVersion.isPresent()) {
       existingVersion.get().getCategory(category).getEntries().add(0, entry);
@@ -110,12 +111,14 @@ public class UpdateService {
       .removed(CategoryRemoved.builder()
           .entries(new ArrayList<>(unreleasedVersion.getRemoved().getEntries()))
           .build())
+      .breakingChange(unreleasedVersion.getBreakingChange())
       .build();
 
     unreleasedVersion.getAdded().getEntries().clear();
     unreleasedVersion.getChanged().getEntries().clear();
     unreleasedVersion.getFixed().getEntries().clear();
     unreleasedVersion.getRemoved().getEntries().clear();
+    unreleasedVersion.setBreakingChange("");
 
     return version;
   }

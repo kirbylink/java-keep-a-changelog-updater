@@ -1,4 +1,4 @@
-package de.dddns.kirbylink.keepachangelogupdater.model.category;
+package de.dddns.kirbylink.keepachangelogupdater.model.changelog.category;
 
 import lombok.Builder.Default;
 import lombok.Getter;

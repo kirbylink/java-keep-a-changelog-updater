@@ -1,0 +1,14 @@
+majorTypes:
+  - chore
+minorTypes:
+  - perf
+patchTypes:
+  - feat
+addedTypes:
+  - remove
+fixedTypes:
+  - feat
+changedTypes:
+  - chore
+removedTypes:
+  - fix
