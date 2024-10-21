@@ -30,7 +30,7 @@ To use the source code directly, follow these steps:
    ```
 4. Run the application:
    ```sh
-   java -jar target/keep-a-changelog-updater-1.0.1-jar-with-dependencies.jar
+   java -jar target/keep-a-changelog-updater-1.1.0-jar-with-dependencies.jar
    ```
 
 ## Docker
