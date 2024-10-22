@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,16 +14,16 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import de.dddns.kirbylink.keepachangelogupdater.model.Entity;
-import de.dddns.kirbylink.keepachangelogupdater.model.EntityHeader;
-import de.dddns.kirbylink.keepachangelogupdater.model.ReleaseType;
-import de.dddns.kirbylink.keepachangelogupdater.model.Version;
-import de.dddns.kirbylink.keepachangelogupdater.model.VersionEntry;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryAdded;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryChanged;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryFixed;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryRemoved;
-import de.dddns.kirbylink.keepachangelogupdater.model.category.CategoryType;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.Entity;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.EntityHeader;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.ReleaseType;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.Version;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.VersionEntry;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryType;
 
 class UpdateServiceTest {
 
@@ -196,7 +197,8 @@ class UpdateServiceTest {
       // Given
       var entry = VersionEntry.builder().description("Add example entry").build();
       var added = CategoryAdded.builder().entries(new ArrayList<>(Arrays.asList(entry))).build();
-      var versionUnreleased = Version.builder().releaseVersion(UNRELEASED_VERSION).added(added).build();
+      var breakingChange = "Description of breaking Change";
+      var versionUnreleased = Version.builder().releaseVersion(UNRELEASED_VERSION).added(added).breakingChange(breakingChange).build();
       var entity = Entity.builder().header(EntityHeader.builder().build()).versions(new ArrayList<>(Arrays.asList(versionUnreleased))).build();
 
       // When
@@ -205,7 +207,12 @@ class UpdateServiceTest {
       // Then
       AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(2);
       assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(0).getAdded().getEntries()).isEmpty();
+      AssertionsForClassTypes.assertThat(entity.getVersions().get(0).getBreakingChange()).isEmpty();
+
       assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo(expectedReleaseVersion);
+      assertThat(entity.getVersions().get(1).getAdded().getEntries().get(0)).isEqualTo(entry);
+      assertThat(entity.getVersions().get(1).getBreakingChange()).isEqualTo(breakingChange);
     }
 
     @ParameterizedTest

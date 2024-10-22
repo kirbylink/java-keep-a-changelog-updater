@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class CommandLineConstants {
-  public static final String OPTION_SCENARIO_DESCRIPTION = "Scenario to execute: create, add-entry, release";
+  public static final String OPTION_SCENARIO_DESCRIPTION = "Scenario to execute: create, add-entry, release, auto-generate";
   public static final String OPTION_SCENARIO_LONG = "scenario";
   public static final String OPTION_SCENARIO_SHORT = "s";
   public static final String OPTION_HELP_SHORT = "h";
@@ -38,5 +38,17 @@ public class CommandLineConstants {
   public static final String OPTION_RELEASE_TYPE_LONG = "release-type";
   public static final String OPTION_RELEASE_TYPE_SHORT = "rt";
   public static final String OPTION_RELEASE_TYPE_DESCRIPTION = "Release type: major, minor, patch";
+
+  public static final String OPTION_SCENARIO_AUTO_GENERATE = "auto-generate";
+  public static final String OPTION_GIT_LOG_PATH_SHORT = "g";
+  public static final String OPTION_GIT_LOG_PATH_LONG = "git-log-path";
+  public static final String OPTION_GIT_LOG_PATH_DESCRIPTION = "Path to the git log file";
+  public static final String OPTION_CUTOM_PROPERTIES_PATH_SHORT = "p";
+  public static final String OPTION_CUTOM_PROPERTIES_PATH_LONG = "properties-path";
+  public static final String OPTION_CUTOM_PROPERTIES_PATH_DESCRIPTION = "Path to the custom properties file";
+
+  public static final String OPTION_AUTO_RELEASE_SHORT = "a";
+  public static final String OPTION_AUTO_RELEASE_LONG = "auto-release";
+  public static final String OPTION_AUTO_RELEASE_DESCRIPTION = "Create automatically a Release after log analysis. Ignores 'version' if set.";
 
 }
