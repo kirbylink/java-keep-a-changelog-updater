@@ -5,6 +5,7 @@ import java.util.Objects;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.Category;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryDeprecated;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategorySecurity;
@@ -33,12 +34,14 @@ public class Version {
   private final CategoryRemoved removed = CategoryRemoved.builder().build();
   @Default
   private final CategorySecurity security = CategorySecurity.builder().build();
+  @Default
+  private final CategoryDeprecated deprecated = CategoryDeprecated.builder().build();
   @Setter
   @Default
   private String breakingChange = "";
 
   public Category getCategory(CategoryType type) {
-    return Arrays.asList(added, changed, fixed, removed, security).stream()
+    return Arrays.asList(added, changed, fixed, removed, security, deprecated).stream()
       .filter(Objects::nonNull)
       .filter(category -> category.getType().equals(type))
       .findFirst()
@@ -72,11 +75,16 @@ public class Version {
     if (!security.getEntries().isEmpty()) {
       stringBuilder.append(security).append("\n");
     }
+    if (!deprecated.getEntries().isEmpty()) {
+      stringBuilder.append(deprecated).append("\n");
+    }
 
     if (added.getEntries().isEmpty() &&
         changed.getEntries().isEmpty() &&
         fixed.getEntries().isEmpty() &&
-        removed.getEntries().isEmpty()) {
+        removed.getEntries().isEmpty() &&
+        security.getEntries().isEmpty() &&
+        deprecated.getEntries().isEmpty()) {
       stringBuilder.append("\n");
     }
 

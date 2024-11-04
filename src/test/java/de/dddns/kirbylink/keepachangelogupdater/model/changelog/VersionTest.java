@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryDeprecated;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategorySecurity;
@@ -52,6 +53,13 @@ class VersionTest {
         .entries(Collections.singletonList(entrySecurity))
         .build();
 
+    var entryDeprecated = VersionEntry.builder()
+        .description("Deprecated sixth item")
+        .build();
+    var categoryDeprecated = CategoryDeprecated.builder()
+        .entries(Collections.singletonList(entryDeprecated))
+        .build();
+
     // When
     var changelogVersion = Version.builder()
         .releaseVersion("1.0.0")
@@ -61,6 +69,7 @@ class VersionTest {
         .fixed(categoryFixed)
         .removed(categoryRemoved)
         .security(categorySecurity)
+        .deprecated(categoryDeprecated)
         .build();
 
     // Then
@@ -83,6 +92,10 @@ class VersionTest {
     assertThat(changelogVersion.getSecurity()).isNotNull();
     AssertionsForInterfaceTypes.assertThat(changelogVersion.getSecurity().getEntries()).isNotEmpty().hasSize(1);
     assertThat(changelogVersion.getSecurity().getEntries().get(0).getDescription()).isEqualTo("Security fifth item");
+
+    assertThat(changelogVersion.getDeprecated()).isNotNull();
+    AssertionsForInterfaceTypes.assertThat(changelogVersion.getDeprecated().getEntries()).isNotEmpty().hasSize(1);
+    assertThat(changelogVersion.getDeprecated().getEntries().get(0).getDescription()).isEqualTo("Deprecated sixth item");
   }
 
   @Test
@@ -174,6 +187,13 @@ class VersionTest {
         .entries(Collections.singletonList(entrySecurity))
         .build();
 
+    var entryDeprecated = VersionEntry.builder()
+        .description("Deprecated sixth item")
+        .build();
+    var categoryDeprecated = CategoryDeprecated.builder()
+        .entries(Collections.singletonList(entryDeprecated))
+        .build();
+
     var changelogVersion = Version.builder()
         .releaseVersion("1.0.0")
         .date("2024-07-20")
@@ -182,6 +202,7 @@ class VersionTest {
         .fixed(categoryFixed)
         .removed(categoryRemoved)
         .security(categorySecurity)
+        .deprecated(categoryDeprecated)
         .build();
 
     var expectedOutput = """
@@ -200,6 +221,9 @@ class VersionTest {
 
         ### Security
         - Security fifth item
+
+        ### Deprecated
+        - Deprecated sixth item
 
         """;
 

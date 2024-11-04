@@ -10,7 +10,8 @@ public enum CategoryType {
   CHANGED("Changed"),
   FIXED("Fixed"),
   REMOVED("Removed"),
-  SECURITY("Security");
+  SECURITY("Security"),
+  DEPRECATED("Deprecated");
 
   @Getter
   private final String value;

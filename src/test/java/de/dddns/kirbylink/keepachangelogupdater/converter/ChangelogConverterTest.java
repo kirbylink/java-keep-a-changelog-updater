@@ -18,6 +18,7 @@ import de.dddns.kirbylink.keepachangelogupdater.model.changelog.Version;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.VersionEntry;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryDeprecated;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategorySecurity;
@@ -54,6 +55,9 @@ class ChangelogConverterTest {
 
       ### Security
       - Update dependencys for security reasons
+
+      ### Deprecated
+      - Deprecated api
 
       ## [0.0.1] - 2024-06.30
       ### Added
@@ -105,6 +109,7 @@ class ChangelogConverterTest {
       AssertionsForInterfaceTypes.assertThat(versionSecond.getFixed().getEntries()).hasSize(1);
       AssertionsForInterfaceTypes.assertThat(versionSecond.getRemoved().getEntries()).hasSize(2);
       AssertionsForInterfaceTypes.assertThat(versionSecond.getSecurity().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(versionSecond.getDeprecated().getEntries()).hasSize(1);
 
       var versionThird = versions.get(2);
       assertThat(versionThird.getReleaseVersion()).isEqualTo("0.0.1");
@@ -262,7 +267,9 @@ class ChangelogConverterTest {
       var categoryRemoved = CategoryRemoved.builder().entries(Arrays.asList(entryRemoved01, entryRemoved02)).build();
       var entrySecurity = VersionEntry.builder().description("Update dependencys for security reasons").build();
       var categorySecurity = CategorySecurity.builder().entries(Arrays.asList(entrySecurity)).build();
-      version = Version.builder().changed(categoryChanged).fixed(categoryFixed).removed(categoryRemoved).security(categorySecurity).releaseVersion("0.1.0").date("2024-07-20").build();
+      var entryDeprecated = VersionEntry.builder().description("Deprecated api").build();
+      var categoryDeprecated = CategoryDeprecated.builder().entries(Arrays.asList(entryDeprecated)).build();
+      version = Version.builder().changed(categoryChanged).fixed(categoryFixed).removed(categoryRemoved).security(categorySecurity).deprecated(categoryDeprecated).releaseVersion("0.1.0").date("2024-07-20").build();
       versions.add(version);
 
       entry = VersionEntry.builder().description("Add initial files").build();
