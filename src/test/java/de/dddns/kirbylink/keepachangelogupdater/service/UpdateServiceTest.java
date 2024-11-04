@@ -21,8 +21,10 @@ import de.dddns.kirbylink.keepachangelogupdater.model.changelog.Version;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.VersionEntry;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryDeprecated;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategorySecurity;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryType;
 
 class UpdateServiceTest {
@@ -268,7 +270,11 @@ class UpdateServiceTest {
       var entryRemoved01 = VersionEntry.builder().description("Remove unused method `parse()`").build();
       var entryRemoved02 = VersionEntry.builder().description("Delete check for NullpointerException in `main()` method").build();
       var categoryRemoved = CategoryRemoved.builder().entries(new ArrayList<>(Arrays.asList(entryRemoved01, entryRemoved02))).build();
-      var versionUnreleased = Version.builder().releaseVersion(UNRELEASED_VERSION).added(categoryAdded).changed(categoryChanged).fixed(categoryFixed).removed(categoryRemoved).build();
+      var entrySecurity = VersionEntry.builder().description("Fix a buffer overflow").build();
+      var categorySecurity = CategorySecurity.builder().entries(new ArrayList<>(Arrays.asList(entrySecurity))).build();
+      var entryDeprecated = VersionEntry.builder().description("Set api as deprecated").build();
+      var categoryDeprecated = CategoryDeprecated.builder().entries(new ArrayList<>(Arrays.asList(entryDeprecated))).build();
+      var versionUnreleased = Version.builder().releaseVersion(UNRELEASED_VERSION).added(categoryAdded).changed(categoryChanged).fixed(categoryFixed).removed(categoryRemoved).security(categorySecurity).deprecated(categoryDeprecated).build();
       var version = Version.builder().releaseVersion("1.0.1").date("2024-06-01").added(categoryAdded).build();
       var entity = Entity.builder().header(EntityHeader.builder().build()).versions(new ArrayList<>(Arrays.asList(versionUnreleased, version))).build();
 
@@ -292,6 +298,10 @@ class UpdateServiceTest {
       assertThat(entity.getVersions().get(1).getFixed().getEntries()).isEqualTo(Arrays.asList(entryFixed));
       AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(1).getRemoved().getEntries()).hasSize(2);
       assertThat(entity.getVersions().get(1).getRemoved().getEntries()).isEqualTo(Arrays.asList(entryRemoved01, entryRemoved02));
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(1).getSecurity().getEntries()).hasSize(1);
+      assertThat(entity.getVersions().get(1).getSecurity().getEntries()).isEqualTo(Arrays.asList(entrySecurity));
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions().get(1).getDeprecated().getEntries()).hasSize(1);
+      assertThat(entity.getVersions().get(1).getDeprecated().getEntries()).isEqualTo(Arrays.asList(entryDeprecated));
 
       assertThat(entity.getVersions().get(2).getReleaseVersion()).isEqualTo("1.0.1");
     }
@@ -336,6 +346,40 @@ class UpdateServiceTest {
       var entryRemoved = VersionEntry.builder().description("Remove unused method `parse()`").build();
       var categoryRemoved = CategoryRemoved.builder().entries(new ArrayList<>(Arrays.asList(entryRemoved))).build();
       var versionUnreleased = Version.builder().releaseVersion(UNRELEASED_VERSION).removed(categoryRemoved).build();
+      var entity = Entity.builder().header(EntityHeader.builder().build()).versions(new ArrayList<>(Arrays.asList(versionUnreleased))).build();
+
+      // When
+      updateService.createNewRelease(entity, ReleaseType.MINOR);
+
+      // Then
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(2);
+      assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
+      assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo("0.1.0");
+    }
+
+    @Test
+    void testCreateNewRelease_WhenUnreleaseHasOnlySecurityEntries_ThenEntityWillHaveNewVersion() {
+      // Given
+      var entrySecurity = VersionEntry.builder().description("Remove unused method `parse()`").build();
+      var categorySecurity = CategorySecurity.builder().entries(new ArrayList<>(Arrays.asList(entrySecurity))).build();
+      var versionUnreleased = Version.builder().releaseVersion(UNRELEASED_VERSION).security(categorySecurity).build();
+      var entity = Entity.builder().header(EntityHeader.builder().build()).versions(new ArrayList<>(Arrays.asList(versionUnreleased))).build();
+
+      // When
+      updateService.createNewRelease(entity, ReleaseType.MINOR);
+
+      // Then
+      AssertionsForInterfaceTypes.assertThat(entity.getVersions()).hasSize(2);
+      assertThat(entity.getVersions().get(0).getReleaseVersion()).isEqualTo(UNRELEASED_VERSION);
+      assertThat(entity.getVersions().get(1).getReleaseVersion()).isEqualTo("0.1.0");
+    }
+
+    @Test
+    void testCreateNewRelease_WhenUnreleaseHasOnlyDeprecatedEntries_ThenEntityWillHaveNewVersion() {
+      // Given
+      var entryDeprecated = VersionEntry.builder().description("Remove unused method `parse()`").build();
+      var categoryDeprecated = CategoryDeprecated.builder().entries(new ArrayList<>(Arrays.asList(entryDeprecated))).build();
+      var versionUnreleased = Version.builder().releaseVersion(UNRELEASED_VERSION).deprecated(categoryDeprecated).build();
       var entity = Entity.builder().header(EntityHeader.builder().build()).versions(new ArrayList<>(Arrays.asList(versionUnreleased))).build();
 
       // When
