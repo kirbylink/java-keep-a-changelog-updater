@@ -7,6 +7,7 @@ import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.Categor
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategorySecurity;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,12 +31,14 @@ public class Version {
   private final CategoryFixed fixed = CategoryFixed.builder().build();
   @Default
   private final CategoryRemoved removed = CategoryRemoved.builder().build();
+  @Default
+  private final CategorySecurity security = CategorySecurity.builder().build();
   @Setter
   @Default
   private String breakingChange = "";
 
   public Category getCategory(CategoryType type) {
-    return Arrays.asList(added, changed, fixed, removed).stream()
+    return Arrays.asList(added, changed, fixed, removed, security).stream()
       .filter(Objects::nonNull)
       .filter(category -> category.getType().equals(type))
       .findFirst()
@@ -65,6 +68,9 @@ public class Version {
     }
     if (!removed.getEntries().isEmpty()) {
       stringBuilder.append(removed).append("\n");
+    }
+    if (!security.getEntries().isEmpty()) {
+      stringBuilder.append(security).append("\n");
     }
 
     if (added.getEntries().isEmpty() &&

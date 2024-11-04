@@ -20,6 +20,7 @@ import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.Categor
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategorySecurity;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryType;
 import de.dddns.kirbylink.keepachangelogupdater.model.conventionalcommits.HeadingResult;
 import lombok.RequiredArgsConstructor;
@@ -173,6 +174,7 @@ public class ChangelogConverter {
       case CHANGED -> currentVersionBuilder.changed(CategoryChanged.builder().entries(getVersionEntries(node)).build());
       case FIXED -> currentVersionBuilder.fixed(CategoryFixed.builder().entries(getVersionEntries(node)).build());
       case REMOVED -> currentVersionBuilder.removed(CategoryRemoved.builder().entries(getVersionEntries(node)).build());
+      case SECURITY -> currentVersionBuilder.security(CategorySecurity.builder().entries(getVersionEntries(node)).build());
     }
   }
 
