@@ -9,6 +9,7 @@ import static de.dddns.kirbylink.keepachangelogupdater.utility.CommandLineConsta
 import static de.dddns.kirbylink.keepachangelogupdater.utility.CommandLineConstants.OPTION_REPOSITORY_SHORT;
 import static de.dddns.kirbylink.keepachangelogupdater.utility.CommandLineConstants.OPTION_VERSION_SHORT;
 import java.io.IOException;
+import java.util.Optional;
 import org.apache.commons.cli.CommandLine;
 import de.dddns.kirbylink.keepachangelogupdater.config.ConventionalCommitConfiguration;
 import de.dddns.kirbylink.keepachangelogupdater.converter.ChangelogConverter;
@@ -52,8 +53,8 @@ public class AutoGenerateScenarioHandler implements ScenarioHandler {
     conventionalCommitConverter.convertCommitsToChangelogEntries(commits, version);
 
     if (commandLine.hasOption(OPTION_AUTO_RELEASE_SHORT)) {
-      var releaseType = conventionalCommitConverter.determineReleaseType(commits);
-      updateService.createNewRelease(entity, releaseType);
+      var optionalReleaseType = Optional.ofNullable(conventionalCommitConverter.determineReleaseType(commits));
+      optionalReleaseType.ifPresent(releaseType -> updateService.createNewRelease(entity, releaseType));
     }
 
     FilesUtility.createOutput(commandLine, changelogConverter.convertToString(entity));
