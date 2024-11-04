@@ -7,7 +7,7 @@
 	<name>Java Keep a Changelog Updater</name>
 	<description>This project is a Java application designed to parse and update
 		"keep a changelog" CHANGELOG.md files</description>
-	<version>1.1.1</version>
+	<version>1.2.0</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -303,10 +303,9 @@
 						</goals>
 						<configuration>
 							<failOnWarning>true</failOnWarning>
-							<ignoredDependencies>
-								<ignoredDependency>
-									ch.qos.logback:logback-classic</ignoredDependency>
-							</ignoredDependencies>
+							<ignoredUnusedDeclaredDependencies>
+								<ignoredUnusedDeclaredDependency>ch.qos.logback:logback-classic</ignoredUnusedDeclaredDependency>
+							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>
 				</executions>
@@ -323,8 +322,7 @@
 				<version>${jacoco-maven-plugin.version}</version>
 				<configuration>
 					<dataFile>${project.build.directory}/jacoco.exec</dataFile>
-					<outputDirectory>
-						${project.reporting.outputDirectory}/site/jacoco-unit</outputDirectory>
+					<outputDirectory>${project.reporting.outputDirectory}/site/jacoco-unit</outputDirectory>
 					<formats>
 						<format>html</format>
 						<format>xml</format>
@@ -340,8 +338,7 @@
 				<version>${jacoco-maven-plugin.version}</version>
 				<configuration>
 					<dataFile>${project.build.directory}/jacoco-it.exec</dataFile>
-					<outputDirectory>
-						${project.reporting.outputDirectory}/site/jacoco-it</outputDirectory>
+					<outputDirectory>${project.reporting.outputDirectory}/site/jacoco-it</outputDirectory>
 					<formats>
 						<format>html</format>
 						<format>xml</format>

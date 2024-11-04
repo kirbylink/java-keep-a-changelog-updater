@@ -18,8 +18,10 @@ import de.dddns.kirbylink.keepachangelogupdater.model.changelog.Version;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.VersionEntry;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryDeprecated;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategorySecurity;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryType;
 
 class ChangelogConverterTest {
@@ -50,6 +52,12 @@ class ChangelogConverterTest {
       ### Removed
       - Remove unused method `parse()`
       - Delete check for NullpointerException in `main()` method
+
+      ### Security
+      - Update dependencys for security reasons
+
+      ### Deprecated
+      - Deprecated api
 
       ## [0.0.1] - 2024-06.30
       ### Added
@@ -91,19 +99,22 @@ class ChangelogConverterTest {
       assertThat(versionUnreleased.getReleaseVersion()).isEqualTo("Unreleased");
       assertThat(versionUnreleased.getDate()).isEmpty();
       assertThat(versionUnreleased.getAdded()).isNotNull();
+      AssertionsForInterfaceTypes.assertThat(versionUnreleased.getAdded().getEntries()).hasSize(1);
 
       var versionSecond = versions.get(1);
       assertThat(versionSecond.getReleaseVersion()).isEqualTo("0.1.0");
       assertThat(versionSecond.getDate()).isEqualTo("2024-07-20");
       AssertionsForInterfaceTypes.assertThat(versionSecond.getAdded().getEntries()).isEmpty();
-      AssertionsForInterfaceTypes.assertThat(versionSecond.getChanged().getEntries()).isNotEmpty();
-      AssertionsForInterfaceTypes.assertThat(versionSecond.getFixed().getEntries()).isNotEmpty();
-      AssertionsForInterfaceTypes.assertThat(versionSecond.getRemoved().getEntries()).isNotEmpty();
+      AssertionsForInterfaceTypes.assertThat(versionSecond.getChanged().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(versionSecond.getFixed().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(versionSecond.getRemoved().getEntries()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(versionSecond.getSecurity().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(versionSecond.getDeprecated().getEntries()).hasSize(1);
 
       var versionThird = versions.get(2);
       assertThat(versionThird.getReleaseVersion()).isEqualTo("0.0.1");
       assertThat(versionThird.getDate()).isEqualTo("2024-06.30");
-      AssertionsForInterfaceTypes.assertThat(versionThird.getAdded().getEntries()).isNotEmpty();
+      AssertionsForInterfaceTypes.assertThat(versionThird.getAdded().getEntries()).hasSize(1);
       AssertionsForInterfaceTypes.assertThat(versionThird.getChanged().getEntries()).isEmpty();
       AssertionsForInterfaceTypes.assertThat(versionThird.getFixed().getEntries()).isEmpty();
       AssertionsForInterfaceTypes.assertThat(versionThird.getRemoved().getEntries()).isEmpty();
@@ -254,7 +265,11 @@ class ChangelogConverterTest {
       var entryRemoved01 = VersionEntry.builder().description("Remove unused method `parse()`").build();
       var entryRemoved02 = VersionEntry.builder().description("Delete check for NullpointerException in `main()` method").build();
       var categoryRemoved = CategoryRemoved.builder().entries(Arrays.asList(entryRemoved01, entryRemoved02)).build();
-      version = Version.builder().changed(categoryChanged).fixed(categoryFixed).removed(categoryRemoved).releaseVersion("0.1.0").date("2024-07-20").build();
+      var entrySecurity = VersionEntry.builder().description("Update dependencys for security reasons").build();
+      var categorySecurity = CategorySecurity.builder().entries(Arrays.asList(entrySecurity)).build();
+      var entryDeprecated = VersionEntry.builder().description("Deprecated api").build();
+      var categoryDeprecated = CategoryDeprecated.builder().entries(Arrays.asList(entryDeprecated)).build();
+      version = Version.builder().changed(categoryChanged).fixed(categoryFixed).removed(categoryRemoved).security(categorySecurity).deprecated(categoryDeprecated).releaseVersion("0.1.0").date("2024-07-20").build();
       versions.add(version);
 
       entry = VersionEntry.builder().description("Add initial files").build();

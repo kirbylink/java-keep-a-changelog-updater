@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.2.0] - 2024-11-04
+### Added
+- Add Deprecated as additional Category
+- Add Security as additional Category
+
+### Fixed
+- An exception occurred during auto release without changes
+
 ## [v1.1.1] - 2024-11-01
 ### Changed
 - Update Maven dependencies
@@ -32,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for semantic versioning.
 
 [unreleased]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/main...HEAD
+[v1.2.0]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v1.1.1...v1.2.0
 [v1.1.1]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v1.1.0...v1.1.1
 [v1.1.0]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v1.0.1...v1.1.0
 [v1.0.1]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v1.0.0...v1.0.1

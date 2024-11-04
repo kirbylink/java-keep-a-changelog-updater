@@ -10,8 +10,10 @@ import de.dddns.kirbylink.keepachangelogupdater.model.changelog.Version;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.VersionEntry;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryDeprecated;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategorySecurity;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryType;
 import de.dddns.kirbylink.keepachangelogupdater.utility.VersionUtility;
 
@@ -46,7 +48,9 @@ public class UpdateService {
     if (versions.get(0).getAdded().getEntries().isEmpty() &&
         versions.get(0).getChanged().getEntries().isEmpty() &&
         versions.get(0).getFixed().getEntries().isEmpty() &&
-        versions.get(0).getRemoved().getEntries().isEmpty()) {
+        versions.get(0).getRemoved().getEntries().isEmpty() &&
+        versions.get(0).getSecurity().getEntries().isEmpty() &&
+        versions.get(0).getDeprecated().getEntries().isEmpty()) {
       return;
     }
 
@@ -111,6 +115,12 @@ public class UpdateService {
       .removed(CategoryRemoved.builder()
           .entries(new ArrayList<>(unreleasedVersion.getRemoved().getEntries()))
           .build())
+      .security(CategorySecurity.builder()
+          .entries(new ArrayList<>(unreleasedVersion.getSecurity().getEntries()))
+          .build())
+      .deprecated(CategoryDeprecated.builder()
+          .entries(new ArrayList<>(unreleasedVersion.getDeprecated().getEntries()))
+          .build())
       .breakingChange(unreleasedVersion.getBreakingChange())
       .build();
 
@@ -118,6 +128,8 @@ public class UpdateService {
     unreleasedVersion.getChanged().getEntries().clear();
     unreleasedVersion.getFixed().getEntries().clear();
     unreleasedVersion.getRemoved().getEntries().clear();
+    unreleasedVersion.getSecurity().getEntries().clear();
+    unreleasedVersion.getDeprecated().getEntries().clear();
     unreleasedVersion.setBreakingChange("");
 
     return version;
@@ -136,6 +148,8 @@ public class UpdateService {
       case CHANGED -> versionBuilder.changed(CategoryChanged.builder().entries(new ArrayList<>(Arrays.asList(entry))).build());
       case FIXED -> versionBuilder.fixed(CategoryFixed.builder().entries(new ArrayList<>(Arrays.asList(entry))).build());
       case REMOVED -> versionBuilder.removed(CategoryRemoved.builder().entries(new ArrayList<>(Arrays.asList(entry))).build());
+      case SECURITY -> versionBuilder.security(CategorySecurity.builder().entries(new ArrayList<>(Arrays.asList(entry))).build());
+      case DEPRECATED -> versionBuilder.deprecated(CategoryDeprecated.builder().entries(new ArrayList<>(Arrays.asList(entry))).build());
     }
     return versionBuilder.build();
   }

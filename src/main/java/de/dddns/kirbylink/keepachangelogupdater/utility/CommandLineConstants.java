@@ -31,7 +31,7 @@ public class CommandLineConstants {
   public static final String OPTION_DESCRIPTION_DESCRIPTION = "Description for a new entry";
   public static final String OPTION_CATEGORY_SHORT = "t";
   public static final String OPTION_CATEGORY_LONG = "category";
-  public static final String OPTION_CATEGORY_DESCRIPTION = "Category for the new entry (Added, Changed, Fixed, Removed)";
+  public static final String OPTION_CATEGORY_DESCRIPTION = "Category for the new entry (Added, Changed, Fixed, Removed, Security, Deprecated)";
   public static final String OPTION_VERSION_SHORT = "v";
   public static final String OPTION_VERSION_LONG = "version";
   public static final String OPTION_VERSION_DESCRIPTION = "Existing release version (default: Unreleased)";

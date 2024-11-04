@@ -135,27 +135,29 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
     private static Stream<Arguments> provideArgumentsForPrintingHelInMainMethod() {
 
       var stringFormatCreate = """
-          usage: java -jar %s -s create -b <arg> -c | -o <arg> [-d <arg>]  -r <arg> [-t <arg>]
+          usage: java -jar %s
+                 -s create -b <arg> -c | -o <arg> [-d <arg>]  -r <arg> [-t <arg>]
            -b,--branch <arg>        Main branch for link generation
            -c,--console             Output result to console instead of a file
            -d,--description <arg>   Description for a new entry
            -o,--output <arg>        Path to the output file
            -r,--repository <arg>    Repository URL for link generation
            -t,--category <arg>      Category for the new entry (Added, Changed,
-                                    Fixed, Removed)
+                                    Fixed, Removed, Security, Deprecated)
           """;
       var expectedOutputCreate = String.format(stringFormatCreate, program);
 
       var stringFormatAddEntry = """
-         usage: java -jar %s -s add-entry -c | -o <arg> -d <arg> -i <arg>  -t <arg> [-v <arg>]
-          -c,--console             Output result to console instead of a file
-          -d,--description <arg>   Description for a new entry
-          -i,--input <arg>         Path to the existing CHANGELOG.md file
-          -o,--output <arg>        Path to the output file (default: input path)
-          -t,--category <arg>      Category for the new entry (Added, Changed,
-                                   Fixed, Removed)
-          -v,--version <arg>       Existing release version (default: Unreleased)
-         """;
+          usage: java -jar %s
+                 -s add-entry -c | -o <arg> -d <arg> -i <arg>  -t <arg> [-v <arg>]
+           -c,--console             Output result to console instead of a file
+           -d,--description <arg>   Description for a new entry
+           -i,--input <arg>         Path to the existing CHANGELOG.md file
+           -o,--output <arg>        Path to the output file (default: input path)
+           -t,--category <arg>      Category for the new entry (Added, Changed,
+                                    Fixed, Removed, Security, Deprecated)
+           -v,--version <arg>       Existing release version (default: Unreleased)
+          """;
       var expectedOutputAddEntry = String.format(stringFormatAddEntry, program);
 
       var stringFormatRelease = """
@@ -736,7 +738,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       void testMain_WhenMethodWithScenarioAutoGenerateWithoutAutoReleaseAndAllRequiredArgsIsCalled_ThenNewEntriesAreAddedToWantedVersionAndResultIsPrinted() throws URISyntaxException {
 
         // Given
-        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-with-entries.md", "-g", "src/test/resources/git-log-with-duplicated-entries-and-non-conventional-commits.txt", "-c", "-v", "0.1.0"};
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-with-entries.md", "-g", "src/test/resources/git-log.txt", "-c", "-v", "0.1.0"};
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var printStream = new PrintStream(byteArrayOutputStream);
         var originalOut = System.out;
@@ -980,6 +982,62 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
           // Then
           var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
           assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
+
+      @Test
+      void testMain_WhenMethodWithScenarioAutoGenerateWithAutoReleaseAndNoConventionalCommits_ThenChangelogWillNotBeChanged() throws URISyntaxException {
+
+        // Given
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-with-entries.md", "-g", "src/test/resources/git-log-with-duplicated-entries-and-non-conventional-commits.txt", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
+
+        var sourceAndTargetChangelog = """
+            # Changelog of some application
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            And there is some additional description.
+
+            ## [Unreleased]
+            ### Added
+            - Document the `convert()` method
+
+            ## [0.1.0] - 2024-07-20
+            ### Changed
+            - Change structure of VersionEntity
+
+            ### Fixed
+            - Replace application name in MAKE.md file
+
+            ### Removed
+            - Remove unused method `parse()`
+            - Delete check for NullpointerException in `main()` method
+
+            ## [0.0.1] - 2024-06.30
+            ### Added
+            - Add initial files
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0
+            [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1
+            """;
+
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(sourceAndTargetChangelog);
         } finally {
           System.setOut(originalOut);
         }
