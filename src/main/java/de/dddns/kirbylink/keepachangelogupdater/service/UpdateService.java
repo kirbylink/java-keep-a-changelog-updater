@@ -50,7 +50,7 @@ public class UpdateService {
         versions.get(0).getFixed().getEntries().isEmpty() &&
         versions.get(0).getRemoved().getEntries().isEmpty() &&
         versions.get(0).getSecurity().getEntries().isEmpty() &&
-      versions.get(0).getDeprecated().getEntries().isEmpty()) {
+        versions.get(0).getDeprecated().getEntries().isEmpty()) {
       return;
     }
 
