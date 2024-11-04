@@ -10,6 +10,7 @@ import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.Categor
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategorySecurity;
 
 class VersionTest {
 
@@ -44,6 +45,13 @@ class VersionTest {
         .entries(Collections.singletonList(entryRemoved))
         .build();
 
+    var entrySecurity = VersionEntry.builder()
+        .description("Security fifth item")
+        .build();
+    var categorySecurity = CategorySecurity.builder()
+        .entries(Collections.singletonList(entrySecurity))
+        .build();
+
     // When
     var changelogVersion = Version.builder()
         .releaseVersion("1.0.0")
@@ -52,6 +60,7 @@ class VersionTest {
         .changed(categoryChanged)
         .fixed(categoryFixed)
         .removed(categoryRemoved)
+        .security(categorySecurity)
         .build();
 
     // Then
@@ -70,6 +79,10 @@ class VersionTest {
     assertThat(changelogVersion.getRemoved()).isNotNull();
     AssertionsForInterfaceTypes.assertThat(changelogVersion.getRemoved().getEntries()).isNotEmpty().hasSize(1);
     assertThat(changelogVersion.getRemoved().getEntries().get(0).getDescription()).isEqualTo("Remove fourth item");
+
+    assertThat(changelogVersion.getSecurity()).isNotNull();
+    AssertionsForInterfaceTypes.assertThat(changelogVersion.getSecurity().getEntries()).isNotEmpty().hasSize(1);
+    assertThat(changelogVersion.getSecurity().getEntries().get(0).getDescription()).isEqualTo("Security fifth item");
   }
 
   @Test
@@ -121,5 +134,79 @@ class VersionTest {
 
     // Then
     assertThat(version.hasBreakingChange()).isEqualTo(expectedHasBreakingChange);
+  }
+
+  @Test
+  void test_ToString_WhenCategoriesAreFilled_ThenToStringCreatesVersionInformation() {
+    // Given
+    var entryAdded = VersionEntry.builder()
+        .description("Add first item")
+        .build();
+    var categoryAdded = CategoryAdded.builder()
+        .entries(Collections.singletonList(entryAdded))
+        .build();
+
+    var entryChanged = VersionEntry.builder()
+        .description("Change second item")
+        .build();
+    var categoryChanged = CategoryChanged.builder()
+        .entries(Collections.singletonList(entryChanged))
+        .build();
+
+    var entryFixed = VersionEntry.builder()
+        .description("Fix third item")
+        .build();
+    var categoryFixed = CategoryFixed.builder()
+        .entries(Collections.singletonList(entryFixed))
+        .build();
+
+    var entryRemoved = VersionEntry.builder()
+        .description("Remove fourth item")
+        .build();
+    var categoryRemoved = CategoryRemoved.builder()
+        .entries(Collections.singletonList(entryRemoved))
+        .build();
+
+    var entrySecurity = VersionEntry.builder()
+        .description("Security fifth item")
+        .build();
+    var categorySecurity = CategorySecurity.builder()
+        .entries(Collections.singletonList(entrySecurity))
+        .build();
+
+    var changelogVersion = Version.builder()
+        .releaseVersion("1.0.0")
+        .date("2024-07-20")
+        .added(categoryAdded)
+        .changed(categoryChanged)
+        .fixed(categoryFixed)
+        .removed(categoryRemoved)
+        .security(categorySecurity)
+        .build();
+
+    var expectedOutput = """
+        ## [1.0.0] - 2024-07-20
+        ### Added
+        - Add first item
+
+        ### Changed
+        - Change second item
+
+        ### Fixed
+        - Fix third item
+
+        ### Removed
+        - Remove fourth item
+
+        ### Security
+        - Security fifth item
+
+        """;
+
+    //When
+    var result = changelogVersion.toString();
+
+    //Then
+    assertThat(result).isEqualTo(expectedOutput);
   }
 }

@@ -135,27 +135,29 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
     private static Stream<Arguments> provideArgumentsForPrintingHelInMainMethod() {
 
       var stringFormatCreate = """
-          usage: java -jar %s -s create -b <arg> -c | -o <arg> [-d <arg>]  -r <arg> [-t <arg>]
+          usage: java -jar %s
+                 -s create -b <arg> -c | -o <arg> [-d <arg>]  -r <arg> [-t <arg>]
            -b,--branch <arg>        Main branch for link generation
            -c,--console             Output result to console instead of a file
            -d,--description <arg>   Description for a new entry
            -o,--output <arg>        Path to the output file
            -r,--repository <arg>    Repository URL for link generation
            -t,--category <arg>      Category for the new entry (Added, Changed,
-                                    Fixed, Removed)
+                                    Fixed, Removed, Security)
           """;
       var expectedOutputCreate = String.format(stringFormatCreate, program);
 
       var stringFormatAddEntry = """
-         usage: java -jar %s -s add-entry -c | -o <arg> -d <arg> -i <arg>  -t <arg> [-v <arg>]
-          -c,--console             Output result to console instead of a file
-          -d,--description <arg>   Description for a new entry
-          -i,--input <arg>         Path to the existing CHANGELOG.md file
-          -o,--output <arg>        Path to the output file (default: input path)
-          -t,--category <arg>      Category for the new entry (Added, Changed,
-                                   Fixed, Removed)
-          -v,--version <arg>       Existing release version (default: Unreleased)
-         """;
+          usage: java -jar %s
+                 -s add-entry -c | -o <arg> -d <arg> -i <arg>  -t <arg> [-v <arg>]
+           -c,--console             Output result to console instead of a file
+           -d,--description <arg>   Description for a new entry
+           -i,--input <arg>         Path to the existing CHANGELOG.md file
+           -o,--output <arg>        Path to the output file (default: input path)
+           -t,--category <arg>      Category for the new entry (Added, Changed,
+                                    Fixed, Removed, Security)
+           -v,--version <arg>       Existing release version (default: Unreleased)
+          """;
       var expectedOutputAddEntry = String.format(stringFormatAddEntry, program);
 
       var stringFormatRelease = """
