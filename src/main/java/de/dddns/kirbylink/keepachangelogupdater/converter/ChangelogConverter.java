@@ -18,6 +18,7 @@ import de.dddns.kirbylink.keepachangelogupdater.model.changelog.Version;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.VersionEntry;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryAdded;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryChanged;
+import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryDeprecated;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryFixed;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategoryRemoved;
 import de.dddns.kirbylink.keepachangelogupdater.model.changelog.category.CategorySecurity;
@@ -175,6 +176,7 @@ public class ChangelogConverter {
       case FIXED -> currentVersionBuilder.fixed(CategoryFixed.builder().entries(getVersionEntries(node)).build());
       case REMOVED -> currentVersionBuilder.removed(CategoryRemoved.builder().entries(getVersionEntries(node)).build());
       case SECURITY -> currentVersionBuilder.security(CategorySecurity.builder().entries(getVersionEntries(node)).build());
+      case DEPRECATED -> currentVersionBuilder.deprecated(CategoryDeprecated.builder().entries(getVersionEntries(node)).build());
     }
   }
 

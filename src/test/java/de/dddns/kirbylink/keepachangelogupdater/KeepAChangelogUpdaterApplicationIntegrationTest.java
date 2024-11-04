@@ -143,7 +143,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
            -o,--output <arg>        Path to the output file
            -r,--repository <arg>    Repository URL for link generation
            -t,--category <arg>      Category for the new entry (Added, Changed,
-                                    Fixed, Removed, Security)
+                                    Fixed, Removed, Security, Deprecated)
           """;
       var expectedOutputCreate = String.format(stringFormatCreate, program);
 
@@ -155,7 +155,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
            -i,--input <arg>         Path to the existing CHANGELOG.md file
            -o,--output <arg>        Path to the output file (default: input path)
            -t,--category <arg>      Category for the new entry (Added, Changed,
-                                    Fixed, Removed, Security)
+                                    Fixed, Removed, Security, Deprecated)
            -v,--version <arg>       Existing release version (default: Unreleased)
           """;
       var expectedOutputAddEntry = String.format(stringFormatAddEntry, program);
