@@ -118,27 +118,27 @@ class ConventionalCommitConfigurationTest {
     // Then
     AssertionsForInterfaceTypes.assertThat(actualList).contains("chore(removed)");
   }
-  
+
   @Test
   void testGetSecurityTypes() throws IOException {
     // Given
-    
+
     // When
     var conventionalCommitConfiguration = new ConventionalCommitConfiguration(null);
     var actualList = conventionalCommitConfiguration.getSecurityTypes();
-    
+
     // Then
     AssertionsForInterfaceTypes.assertThat(actualList).contains("fix(security)");
   }
-  
+
   @Test
   void testGetDeprecatedTypes() throws IOException {
     // Given
-    
+
     // When
     var conventionalCommitConfiguration = new ConventionalCommitConfiguration(null);
     var actualList = conventionalCommitConfiguration.getDeprecatedTypes();
-    
+
     // Then
     AssertionsForInterfaceTypes.assertThat(actualList).contains("chore(deprecated)");
   }

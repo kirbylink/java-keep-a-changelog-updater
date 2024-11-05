@@ -48,11 +48,11 @@ public class ConventionalCommitConfiguration {
   public List<String> getRemovedTypes() {
     return config.getOrDefault("removedTypes", Collections.emptyList());
   }
-  
+
   public List<String> getSecurityTypes() {
     return config.getOrDefault("securityTypes", Collections.emptyList());
   }
-  
+
   public List<String> getDeprecatedTypes() {
     return config.getOrDefault("deprecatedTypes", Collections.emptyList());
   }

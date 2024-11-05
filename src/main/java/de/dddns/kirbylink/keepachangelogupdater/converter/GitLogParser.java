@@ -24,8 +24,11 @@ public class GitLogParser {
   private static final Pattern CONVENTIONAL_COMMIT_MESSAGE_PATTERN = Pattern.compile("^(\\w+)(?:\\(([^)]+)\\))?(!)?:\\s+(.*)$");
 
   public List<String> splitGitLog(String gitLog) {
-    return Arrays.asList(gitLog.split("(?=commit)"));
+    return Arrays.stream(gitLog.split("(?m)(?=^commit\\s+[a-f0-9]{40}\\b)"))
+        .map(commitString -> commitString.startsWith("commit") ? commitString : "commit " + commitString)
+        .toList();
   }
+
 
   public Commit parseGitCommit(String individualCommit) {
     var matcher = COMMIT_PATTERN.matcher(individualCommit);
@@ -43,7 +46,7 @@ public class GitLogParser {
       log.debug("Skipping commit: {} - does not follow Conventional Commits", hashCode);
       return null;
     }
-    log.debug("Skipping commit: {} - is not a git commit", individualCommit);
+    log.debug("Skipping commit: {} - is not a cgit commit", individualCommit);
     return null;
   }
 
@@ -85,13 +88,11 @@ public class GitLogParser {
     log.trace("Description: {}", description);
     log.trace("Body: {}", body);
     log.trace("BreakingChange: {}", breakingChange);
+    log.trace("\"!\".equals(breakingChangeFlag: {}", "!".equals(breakingChangeFlag));
+    log.trace("breakingChange != null: {}", breakingChange != null);
 
     if (optionalScope != null && !optionalScope.isEmpty()) {
       type = type.append("(").append(optionalScope).append(")");
-    }
-
-    if ("!".equals(breakingChangeFlag)) {
-      type = type.append(breakingChangeFlag);
     }
 
     return Commit.builder()
@@ -100,6 +101,7 @@ public class GitLogParser {
         .description(description)
         .body(body)
         .breakingChange(breakingChange)
+        .hasBreakingChange("!".equals(breakingChangeFlag) || breakingChange != null)
         .build();
   }
 

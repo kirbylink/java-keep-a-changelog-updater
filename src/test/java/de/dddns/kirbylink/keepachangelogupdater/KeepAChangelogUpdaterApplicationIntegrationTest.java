@@ -471,10 +471,10 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
             ### Removed
             - Remove unused method `parse()`
             - Delete check for NullpointerException in `main()` method
-            
+
             ### Security
             - Fixing a buffer overflow
-            
+
             ### Deprecated
             - Mark API as deprecated in further version
 
@@ -630,7 +630,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
                 ### Security
                 - Fixing a buffer overflow
-                
+
                 ### Deprecated
                 - Mark API as deprecated in further version
 
@@ -726,20 +726,20 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
             ## [Unreleased]
             ### Added
             - Implement git log parsing
-            
+
             ### Changed
             - Updating dependencies
             - Changing sorting algorithm
 
             ### Fixed
             - Correct minor bug in parsing logic
-            
+
             ### Removed
             - Delete depricated option of command line
-            
+
             ### Security
             - Fixing a buffer overflow
-            
+
             ### Deprecated
             - Mark option of command line as deprecated
 
@@ -799,7 +799,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
             ### Security
             - Fixing a buffer overflow
-            
+
             ### Deprecated
             - Mark API as deprecated in further version
 
@@ -999,10 +999,10 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
             ### Removed
             - Will be under Removed
-            
+
             ### Security
             - Will be under Security
-            
+
             ### Deprecated
             - Will be under Deprecated
 
@@ -1060,7 +1060,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
             ### Security
             - Fixing a buffer overflow
-            
+
             ### Deprecated
             - Mark API as deprecated in further version
 
