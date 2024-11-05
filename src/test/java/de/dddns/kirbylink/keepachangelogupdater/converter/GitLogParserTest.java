@@ -81,6 +81,23 @@ class GitLogParserTest {
   @DisplayName("Tests for parseGitLog method")
   class TestParseGitLogTests {
 
+    @ParameterizedTest(name = "{0}")
+    @CsvSource(value = {
+        "'GitLog contains no commit', 'Hello World'",
+        "'Git commit does not contain conventional commit', 'commit 6672e54d7d685591348314ae9f568b5509d58406\nAuthor: kirbylink <kirbylink@github.com>\nDate:   Tue Oct 1 06:34:56 2024 +0000\n\n    Update for next development version'",
+        "'Message does not follow the conventional commits but contains breaking changes', 'commit 91b9a52a7c655d356289c2607d32a2e1a97277c2\nAuthor: kirbylink <kirbylink@github.com>\nDate:   Thu Oct 3 13:43:47 2024 +0200\n\n    Implement git log parsing\n\n    Some amazing description how it is done.\n    And another information.\n\n    BREAKING CHANGE: Some Multiple lines\n    that shows that there are breaking changes."
+    })
+    void testParseGitLog_WhenGitLogContainsNoValidConventionalCommits_ThenNullIsReturned(String testDescription, String gitCommit) {
+      // Given
+
+      // When
+      var gitLogParser = new GitLogParser();
+      var commit = gitLogParser.parseGitCommit(gitCommit);
+
+      // Then
+      assertThat(commit).isNull();
+    }
+
     @Test
     void testParseGitLog_WhenGitLogContainsConventionalCommit_ThenCommitObjectIsReturned() {
         // Given
@@ -123,26 +140,6 @@ class GitLogParserTest {
       assertThat(commit.getHashCode()).isEqualTo("1adc832ebc22aee29f468c21e4b0ba1c7b868216");
       assertThat(commit.getType()).isEqualTo("build(deps)");
       assertThat(commit.getDescription()).isEqualTo("Update Maven dependencies");
-    }
-
-    @Test
-    void testParseGitLog_WhenGitCommitDoesNotContainConventionalCommit_ThenNullIsReturned() {
-      // Given
-      var gitCommit = """
-                commit 6672e54d7d685591348314ae9f568b5509d58406
-                Author: kirbylink <kirbylink@github.com>
-                Date:   Tue Oct 1 06:34:56 2024 +0000
-
-                    Update for next development version
-
-                """;
-
-      // When
-      var gitLogParser = new GitLogParser();
-      var commit = gitLogParser.parseGitCommit(gitCommit);
-
-      // Then
-      assertThat(commit).isNull();
     }
 
     @Test
@@ -255,31 +252,6 @@ class GitLogParserTest {
       // Then
       assertThat(commit.getType()).isEqualTo("feat");
       assertThat(commit.hasBreakingChange()).isTrue();
-    }
-
-    @Test
-    void testParseGitLog_WhenMessageDoesNotFollowTheConventionalCommitsButContainsBreakingChanges_ThenNullIsReturned() {
-      // Given
-      var gitCommit = """
-                commit 91b9a52a7c655d356289c2607d32a2e1a97277c2
-                Author: kirbylink <kirbylink@github.com>
-                Date:   Thu Oct 3 13:43:47 2024 +0200
-
-                    Implement git log parsing
-
-                    Some amazing description how it is done.
-                    And another information.
-
-                    BREAKING CHANGE: Some Multiple lines
-                    that shows that there are breaking changes.
-                """;
-
-      // When
-      var gitLogParser = new GitLogParser();
-      var commit = gitLogParser.parseGitCommit(gitCommit);
-
-      // Then
-      assertThat(commit).isNull();
     }
   }
 

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ public class GitLogParser {
       log.debug("Skipping commit: {} - does not follow Conventional Commits", hashCode);
       return null;
     }
-    log.debug("Skipping commit: {} - is not a cgit commit", individualCommit);
+    log.debug("Skipping commit: {} - is not a git commit", individualCommit);
     return null;
   }
 
@@ -58,8 +59,8 @@ public class GitLogParser {
       var key = commit.getType() + ":" + commit.getDescription();
       if (uniqueCommits.containsKey(key)) {
         var existingCommit = uniqueCommits.get(key);
-        if (commit.hasBreakingChange() && !commit.getType().endsWith("!")) {
-          var mergedBreakingChange = mergeBreakingChange(existingCommit.getBreakingChange(), commit.getBreakingChange());
+        if (commit.hasBreakingChange()) {
+          var mergedBreakingChange = mergeBreakingChange(existingCommit, commit);
           existingCommit.setBreakingChange(mergedBreakingChange);
         }
       } else {
@@ -73,7 +74,7 @@ public class GitLogParser {
   private Commit parseConventionalCommitMessage(Matcher conventionalCommitMessageMatcher, String[] messageLines, String hashCode) {
     var type = new StringBuilder();
     type.append(conventionalCommitMessageMatcher.group(1));
-    var optionalScope = conventionalCommitMessageMatcher.group(2);
+    var optionalScope = Optional.ofNullable(conventionalCommitMessageMatcher.group(2));
     var breakingChangeFlag = conventionalCommitMessageMatcher.group(3);
     var description = conventionalCommitMessageMatcher.group(4);
 
@@ -91,8 +92,8 @@ public class GitLogParser {
     log.trace("\"!\".equals(breakingChangeFlag: {}", "!".equals(breakingChangeFlag));
     log.trace("breakingChange != null: {}", breakingChange != null);
 
-    if (optionalScope != null && !optionalScope.isEmpty()) {
-      type = type.append("(").append(optionalScope).append(")");
+    if (optionalScope.isPresent()) {
+      type = type.append("(").append(optionalScope.get()).append(")");
     }
 
     return Commit.builder()
@@ -116,10 +117,10 @@ public class GitLogParser {
     return null;
   }
 
-  private String mergeBreakingChange(String existing, String newBreakingChange) {
-    if (existing == null || existing.isEmpty()) {
-      return newBreakingChange;
+  private String mergeBreakingChange(Commit existingCommit, Commit newCommitWithBreakingChange) {
+    if (!existingCommit.hasBreakingChange()) {
+      return newCommitWithBreakingChange.getBreakingChange();
     }
-    return existing + System.lineSeparator() + newBreakingChange;
+    return existingCommit.getBreakingChange() + System.lineSeparator() + newCommitWithBreakingChange.getBreakingChange();
   }
 }
