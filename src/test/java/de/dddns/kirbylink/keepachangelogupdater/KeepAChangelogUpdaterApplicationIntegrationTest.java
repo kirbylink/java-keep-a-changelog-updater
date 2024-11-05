@@ -471,6 +471,12 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
             ### Removed
             - Remove unused method `parse()`
             - Delete check for NullpointerException in `main()` method
+            
+            ### Security
+            - Fixing a buffer overflow
+            
+            ### Deprecated
+            - Mark API as deprecated in further version
 
             ## [0.0.1] - 2024-06.30
             ### Added
@@ -622,6 +628,12 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
                 - Remove unused method `parse()`
                 - Delete check for NullpointerException in `main()` method
 
+                ### Security
+                - Fixing a buffer overflow
+                
+                ### Deprecated
+                - Mark API as deprecated in further version
+
                 ## [0.0.1] - 2024-06.30
                 ### Added
                 - Add initial files
@@ -687,7 +699,6 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
         deleteDirectoryRecursively(temporaryFolder);
       }
-
     }
 
     @Nested
@@ -698,7 +709,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       void testMain_WhenMethodWithScenarioAutoGenerateWithoutAutoReleaseAndAllRequiredArgsIsCalled_ThenNewEntriesAreAddedToUnreleasedAndResultIsPrinted() throws URISyntaxException {
 
         // Given
-        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log.txt", "-c"};
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-all-important-commits.txt", "-c"};
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var printStream = new PrintStream(byteArrayOutputStream);
         var originalOut = System.out;
@@ -715,9 +726,22 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
             ## [Unreleased]
             ### Added
             - Implement git log parsing
+            
+            ### Changed
+            - Updating dependencies
+            - Changing sorting algorithm
 
             ### Fixed
             - Correct minor bug in parsing logic
+            
+            ### Removed
+            - Delete depricated option of command line
+            
+            ### Security
+            - Fixing a buffer overflow
+            
+            ### Deprecated
+            - Mark option of command line as deprecated
 
             [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
             """;
@@ -772,6 +796,12 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
             ### Removed
             - Remove unused method `parse()`
             - Delete check for NullpointerException in `main()` method
+
+            ### Security
+            - Fixing a buffer overflow
+            
+            ### Deprecated
+            - Mark API as deprecated in further version
 
             ## [0.0.1] - 2024-06.30
             ### Added
@@ -969,6 +999,12 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
             ### Removed
             - Will be under Removed
+            
+            ### Security
+            - Will be under Security
+            
+            ### Deprecated
+            - Will be under Deprecated
 
             [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
             [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
@@ -1021,6 +1057,12 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
             ### Removed
             - Remove unused method `parse()`
             - Delete check for NullpointerException in `main()` method
+
+            ### Security
+            - Fixing a buffer overflow
+            
+            ### Deprecated
+            - Mark API as deprecated in further version
 
             ## [0.0.1] - 2024-06.30
             ### Added

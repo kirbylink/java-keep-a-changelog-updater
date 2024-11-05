@@ -3,15 +3,19 @@ minorTypes:
   - feat
 patchTypes:
   - fix
+  - fix(security)
   - build(deps)
   - perf
 addedTypes:
   - feat
 fixedTypes:
   - fix
-  - fix(security)
 changedTypes:
   - perf
   - build(deps)
 removedTypes:
   - chore(removed)
+securityTypes:
+  - fix(security)
+deprecatedTypes:
+  - chore(deprecated)

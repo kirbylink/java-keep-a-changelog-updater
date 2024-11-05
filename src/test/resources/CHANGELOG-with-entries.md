@@ -22,6 +22,12 @@ And there is some additional description.
 - Remove unused method `parse()`
 - Delete check for NullpointerException in `main()` method
 
+### Security
+- Fixing a buffer overflow
+
+### Deprecated
+- Mark API as deprecated in further version
+
 ## [0.0.1] - 2024-06.30
 ### Added
 - Add initial files
