@@ -37,15 +37,19 @@ class ConventionalCommitConverterTest {
           Commit.builder().type("fix").description("Fix a bug").build(),
           Commit.builder().type("build(deps)").description("Update Maven dependencies").build(),
           Commit.builder().type("perf").description("Improve performance").build(),
-          Commit.builder().type("feat").description("Another feature").breakingChange("BREAKING CHANGE: API was changed").build(),
-          Commit.builder().type("chore(removed)").description("Remove API").breakingChange("BREAKING CHANGE: API was removed").build()
+          Commit.builder().type("feat").description("Another feature").breakingChange("BREAKING CHANGE: API was changed").hasBreakingChange(true).build(),
+          Commit.builder().type("chore(removed)").description("Remove API").breakingChange("BREAKING CHANGE: API was removed").hasBreakingChange(true).build(),
+          Commit.builder().type("fix(security)").description("Fix a bufferoverflow").build(),
+          Commit.builder().type("chore(deprecated)").description("Deprecate API in future version").build()
       );
       var unreleasedVersion = Version.builder().releaseVersion("Unreleased").build();
 
       when(conventionalCommitConfiguration.getAddedTypes()).thenReturn(List.of("feat"));
-      when(conventionalCommitConfiguration.getFixedTypes()).thenReturn(List.of("fix", "fix(security)"));
+      when(conventionalCommitConfiguration.getFixedTypes()).thenReturn(List.of("fix"));
       when(conventionalCommitConfiguration.getChangedTypes()).thenReturn(List.of("perf", "build(deps)"));
       when(conventionalCommitConfiguration.getRemovedTypes()).thenReturn(List.of("chore(removed)"));
+      when(conventionalCommitConfiguration.getSecurityTypes()).thenReturn(List.of("fix(security)"));
+      when(conventionalCommitConfiguration.getDeprecatedTypes()).thenReturn(List.of("chore(deprecated)"));
 
       // When
       var updatedVersion = conventionalCommitConverter.convertCommitsToChangelogEntries(commits, unreleasedVersion);
@@ -55,6 +59,8 @@ class ConventionalCommitConverterTest {
       AssertionsForInterfaceTypes.assertThat(updatedVersion.getAdded().getEntries()).hasSize(2);
       AssertionsForInterfaceTypes.assertThat(updatedVersion.getFixed().getEntries()).hasSize(1);
       AssertionsForInterfaceTypes.assertThat(updatedVersion.getChanged().getEntries()).hasSize(2);
+      AssertionsForInterfaceTypes.assertThat(updatedVersion.getSecurity().getEntries()).hasSize(1);
+      AssertionsForInterfaceTypes.assertThat(updatedVersion.getDeprecated().getEntries()).hasSize(1);
       assertThat(updatedVersion.getBreakingChange()).contains("API was changed").contains("API was removed");
     }
 
@@ -71,22 +77,26 @@ class ConventionalCommitConverterTest {
         "'refactor', 'Code cleanup', NULL",
         "'docs', 'Update documentation', NULL",
         "'feat!', 'Introduce breaking change', MAJOR",
+        "'fix(security)', 'Fix a bufferoverflow', PATCH",
+        "'chore(deprecated)', 'Deprecate API', NULL",
         "'chore(removed)!', 'Remove existing API', MAJOR",
         "'chore(removed)', 'Remove existing API', NULL"
     }, nullValues = "NULL")
     void testDetermineReleaseType_WhenSingleCommit_ThenexpectedReleaseTypeIsReturned(String type, String description, ReleaseType expectedReleaseType) {
       // Given
-      var commit = Commit.builder().type(type).description(description).build();
+      var commit = Commit.builder().type(type).description(description).hasBreakingChange(type.contains("!")).build();
       List<Commit> commits = List.of(commit);
 
       lenient().when(conventionalCommitConfiguration.getAddedTypes()).thenReturn(List.of("feat"));
-      lenient().when(conventionalCommitConfiguration.getFixedTypes()).thenReturn(List.of("fix", "fix(security)"));
+      lenient().when(conventionalCommitConfiguration.getFixedTypes()).thenReturn(List.of("fix"));
       lenient().when(conventionalCommitConfiguration.getChangedTypes()).thenReturn(List.of("perf", "build(deps)"));
       lenient().when(conventionalCommitConfiguration.getRemovedTypes()).thenReturn(List.of("chore(removed)"));
+      lenient().when(conventionalCommitConfiguration.getSecurityTypes()).thenReturn(List.of("fix(security)"));
+      lenient().when(conventionalCommitConfiguration.getDeprecatedTypes()).thenReturn(List.of("chore(deprecated)"));
 
       lenient().when(conventionalCommitConfiguration.getMajorTypes()).thenReturn(Collections.emptyList());
       lenient().when(conventionalCommitConfiguration.getMinorTypes()).thenReturn(List.of("feat"));
-      lenient().when(conventionalCommitConfiguration.getPatchTypes()).thenReturn(List.of("fix", "build(deps)", "perf"));
+      lenient().when(conventionalCommitConfiguration.getPatchTypes()).thenReturn(List.of("fix", "fix(security)", "build(deps)", "perf"));
 
       // When
       var result = conventionalCommitConverter.determineReleaseType(commits);
@@ -98,7 +108,7 @@ class ConventionalCommitConverterTest {
     @Test
     void testDetermineReleaseType_WhenMultipleCommitsWithMajorAndPatchChange_ThenReturnMajor() {
       // Given
-      List<Commit> commits = List.of(Commit.builder().type("fix").description("Correct a bug").build(), Commit.builder().type("feat!").description("Add new API with breaking changes").build(),
+      List<Commit> commits = List.of(Commit.builder().type("fix").description("Correct a bug").build(), Commit.builder().type("feat!").description("Add new API with breaking changes").hasBreakingChange(true).build(),
           Commit.builder().type("perf").description("Improve performance").build());
 
       // When
@@ -144,7 +154,7 @@ class ConventionalCommitConverterTest {
     void testDetermineReleaseType_WhenNoDefinedTypeButBreakingChangeFilled_ThenReturnMajor() {
       // Given
       List<Commit> commits = List.of(Commit.builder().type("docs").description("Update documentation").build(),
-          Commit.builder().type("chore(removed)").description("Remove existing API").breakingChange("User can't call the API anymore").build());
+          Commit.builder().type("chore(removed)").description("Remove existing API").hasBreakingChange(true).breakingChange("User can't call the API anymore").build());
 
       // When
       var result = conventionalCommitConverter.determineReleaseType(commits);

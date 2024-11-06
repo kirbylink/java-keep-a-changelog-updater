@@ -12,3 +12,7 @@ changedTypes:
   - chore
 removedTypes:
   - fix
+securityTypes:
+  - refactor
+deprecatedTypes:
+  - docs

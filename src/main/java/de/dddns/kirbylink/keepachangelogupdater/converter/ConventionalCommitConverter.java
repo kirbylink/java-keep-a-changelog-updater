@@ -43,7 +43,9 @@ public class ConventionalCommitConverter {
       conventionalCommitConfiguration.getAddedTypes(), v -> v.getAdded().getEntries().add(VersionEntry.builder().description(description).build()),
       conventionalCommitConfiguration.getFixedTypes(), v -> v.getFixed().getEntries().add(VersionEntry.builder().description(description).build()),
       conventionalCommitConfiguration.getChangedTypes(), v -> v.getChanged().getEntries().add(VersionEntry.builder().description(description).build()),
-      conventionalCommitConfiguration.getRemovedTypes(), v -> v.getRemoved().getEntries().add(VersionEntry.builder().description(description).build())
+      conventionalCommitConfiguration.getRemovedTypes(), v -> v.getRemoved().getEntries().add(VersionEntry.builder().description(description).build()),
+      conventionalCommitConfiguration.getSecurityTypes(), v -> v.getSecurity().getEntries().add(VersionEntry.builder().description(description).build()),
+      conventionalCommitConfiguration.getDeprecatedTypes(), v -> v.getDeprecated().getEntries().add(VersionEntry.builder().description(description).build())
     );
 
     categoryMapping.forEach((types, consumer) -> {
