@@ -2,7 +2,7 @@ commit 91b9a52a7c655d356289c2607d32a2e1a97277c2
 Author: kirbylink <kirbylink@github.com>
 Date:   Thu Oct 3 13:43:47 2024 +0200
 
-    feat: Will be under Fixed
+    feat: Implement git log parsing
     
     First draft of parser
 
@@ -10,28 +10,34 @@ commit 31e22d05c93b4e2c7ab1b98c6beec4e6ac86ed72
 Author: kirbylink <kirbylink@github.com>
 Date:   Thu Oct 3 13:42:47 2024 +0200
 
-    fix: Will be under Removed
+    fix: Correct minor bug in parsing logic
 
 commit 6672e54d7d685591348314ae9f568b5509d58406
 Author: kirbylink <kirbylink@github.com>
 Date:   Tue Oct 1 06:34:56 2024 +0000
 
-    chore: Will trigger a major release and under Changed
+    perf: Changing sorting algorithm
+
+commit 6672e54d7d685591348314ae9f568b5509d58406
+Author: kirbylink <kirbylink@github.com>
+Date:   Tue Oct 1 06:34:56 2024 +0000
+
+    build(deps): Updating dependencies
 
 commit 91b9a52a7c655d356289c2607d32a2e1a97277c2
 Author: kirbylink <kirbylink@github.com>
 Date:   Thu Oct 3 13:43:47 2024 +0200
 
-    remove: Will be under Added
+    chore(removed): Delete depricated option of command line 
 
 commit 31e22d05c93b4e2c7ab1b98c6beec4e6ac86ed72
 Author: kirbylink <kirbylink@github.com>
 Date:   Thu Oct 3 13:42:47 2024 +0200
 
-    refactor: Will be under Security
+    fix(security): Fixing a buffer overflow
 
-commit 91b9a52a7c655d356289c2607d32a2e1a97277c2
+commit 6672e54d7d685591348314ae9f568b5509d58406
 Author: kirbylink <kirbylink@github.com>
-Date:   Thu Oct 3 13:43:47 2024 +0200
+Date:   Tue Oct 1 06:34:56 2024 +0000
 
-    docs: Will be under Deprecated
+    chore(deprecated): Mark option of command line as deprecated
