@@ -108,10 +108,12 @@ git log v1.0.0...HEAD -v > gitlog.txt
 By default, the application considers the following commit types and maps them to "Keep a Changelog" categories:
 
 - **feat** → **Added** (for new features)
-- **fix** (including `fix(security)`) → **Fixed** (for bug fixes)
+- **fix** → **Fixed** (for bug fixes)
 - **perf** → **Changed** (for performance improvements)
 - **build(deps)** → **Changed** (for dependency updates)
 - **chore(removed)** → **Removed** (for removed features)
+- **fix(security)** → **Security** (for security fixes)
+- **chore(deprecated)** → **Deprecated** (for deprecated features)
 
 Certain commit types such as **docs**, **style**, **refactor**, and **test** are ignored by default, as they are not relevant for end-users.
 
@@ -121,7 +123,7 @@ The application can automatically determine the next version based on the commit
 
 - **Breaking changes** (indicated by `BREAKING CHANGE:` in the commit body or by using `!` in the commit type) will trigger a **Major** version update.
 - **feat** commits will trigger a **Minor** version update.
-- **fix**, **perf**, and **build(deps)** commits will trigger a **Patch** version update.
+- **fix**, **fix(security**, **perf**, and **build(deps)** commits will trigger a **Patch** version update.
 
 #### Customizing the Commit Type Mappings
 
@@ -135,18 +137,22 @@ minorTypes:
   - feat
 patchTypes:
   - fix
+  - fix(security)
   - build(deps)
   - perf
 addedTypes:
   - feat
 fixedTypes:
   - fix
-  - fix(security)
 changedTypes:
   - perf
   - build(deps)
 removedTypes:
   - chore(removed)
+securityTypes:
+  - fix(security)
+deprecatedTypes:
+  - chore(deprecated)
 ```
 
 #### Handling Breaking Changes
@@ -186,17 +192,17 @@ See [BUILD.md](./BUILD.md) how to build from Source Code
 ### Using the Compiled JAR
 To use the compiled JAR file, follow these steps:
 
-1. Download the latest release (`keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar`) from the [Releases page](https://github.com/kirbylink/java-keep-a-changelog-updater/releases).
+1. Download the latest release (`keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar`) from the [Releases page](https://github.com/kirbylink/java-keep-a-changelog-updater/releases).
 2. Run the JAR file:
    ```sh
-   java -jar keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar
+   java -jar keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar
    ```
 
 ### Command-Line Parameters
 You can start the program with optional parameters. To get all parameters, start the program with `-h` or `--help`:
 ```bash
 usage: java -jar
-       keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar
+       keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar
        -h | -s <arg>
  -h,--help             Print this help message
  -s,--scenario <arg>   Scenario to execute: create, add-entry, release,
@@ -206,7 +212,7 @@ usage: java -jar
 With `-s` or `--scenario` and `create|add-entry|release` you get all parameters that is needed for the scenario:
 ```bash
 usage: java -jar 
-       keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar
+       keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar
        -s create -b <arg> -c | -o <arg> [-d <arg>]  -r <arg> [-t <arg>]
  -b,--branch <arg>        Main branch for link generation
  -c,--console             Output result to console instead of a file
@@ -219,7 +225,7 @@ usage: java -jar
 
 ```bash
 usage: java -jar 
-       keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar
+       keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar
        -s add-entry -c | -o <arg> -d <arg> -i <arg>  -t <arg> [-v <arg>]
  -c,--console             Output result to console instead of a file
  -d,--description <arg>   Description for a new entry
@@ -232,7 +238,7 @@ usage: java -jar
 
 ```bash
 usage: java -jar
-       keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar
+       keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar
        -s release -b <arg> -c | -o <arg> -i <arg>  -r <arg> -rt <arg>
  -b,--branch <arg>          Main branch for link generation
  -c,--console               Output result to console instead of a file
@@ -244,7 +250,7 @@ usage: java -jar
 
 ```bash
 usage: java -jar
-       keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar
+       keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar
        -s auto-generate [-a] [-b <arg>] -c | -o <arg> -g <arg> -i <arg>
        [-p <arg>] [-r <arg>] [-v <arg>]
  -a,--auto-release            Create automatically a Release after log
@@ -268,7 +274,7 @@ Here are some examples of how to use the Java Keep-A-Changelog Updater:
 ### Example 1: Create empty Changelog
 Creates an empty CHANGELOG.md file under /path/to/output/folder/CHANGELOG.md. Using repository URL and branch to link unreleased commitments.
 ```sh
-java -jar keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar -s create -o /path/to/output/folder/CHANGELOG.md -b main -r https://example.com/example-project.git
+java -jar keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar -s create -o /path/to/output/folder/CHANGELOG.md -b main -r https://example.com/example-project.git
 ```
 
 Example outcome:
@@ -288,7 +294,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Example 2a: Add an entry to Unreleased version
 Reads a CHANGELOG.md file as input, writes under `Unreleased` in category `Changed` the entry `Update Maven dependencies` and save it in the same file.
 ```sh
-java -jar keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar -s add-entry -i /path/to/CHANGELOG.md -d 'Update Maven dependencies' -t Changed -o
+java -jar keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar -s add-entry -i /path/to/CHANGELOG.md -d 'Update Maven dependencies' -t Changed -o
 ```
 
 Example outcome:
@@ -310,7 +316,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Example 2b: Add an entry to existing or new version
 Reads a CHANGELOG.md file as input, writes under `1.0.0` in category `Added` the entry `Some amazing features` and save it in the same file.
 ```sh
-java -jar keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar -s add-entry -i /path/to/CHANGELOG.md -d 'Some amazing features' -t Added -v 1.0.0 -o
+java -jar keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar -s add-entry -i /path/to/CHANGELOG.md -d 'Some amazing features' -t Added -v 1.0.0 -o
 ```
 
 Example outcome:
@@ -337,7 +343,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Example 3: Create a Release version
 Reads a CHANGELOG.md file as input and creates a new Release version with increased Patch version. Using repository URL and branch to create links for all versions.
 ```sh
-java -jar keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar -s release -i /path/to/CHANGELOG.md -b main -r https://example.com/example-project.git -rt patch -o
+java -jar keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar -s release -i /path/to/CHANGELOG.md -b main -r https://example.com/example-project.git -rt patch -o
 ```
 
 Example outcome:
@@ -386,7 +392,7 @@ Date:   Thu Oct 3 13:42:47 2024 +0200
 ```
 
 ```sh
-java -jar keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar -s auto-generate -i /path/to/CHANGELOG.md -g /path/to/git-log.txt -c
+java -jar keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar -s auto-generate -i /path/to/CHANGELOG.md -g /path/to/git-log.txt -c
 ```
 Example outcome:
 ```markdown
@@ -451,7 +457,7 @@ Date:   Thu Oct 3 13:43:47 2024 +0200
 ```
 
 ```sh
-java -jar keep-a-changelog-updater-1.2.0-jar-with-dependencies.jar -s auto-generate -i /path/to/CHANGELOG.md -g /path/to/git-log.txt -a -b main -r https://example.com/example-project.git -c
+java -jar keep-a-changelog-updater-2.0.0-jar-with-dependencies.jar -s auto-generate -i /path/to/CHANGELOG.md -g /path/to/git-log.txt -a -b main -r https://example.com/example-project.git -c
 ```
 Example outcome:
 ```markdown
