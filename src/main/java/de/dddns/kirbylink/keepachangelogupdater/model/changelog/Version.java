@@ -88,7 +88,7 @@ public class Version {
       stringBuilder.append("\n");
     }
 
-    if (!breakingChange.isEmpty()) {
+    if (hasBreakingChange()) {
       stringBuilder.append("BREAKING CHANGE: " + breakingChange + "\n\n");
     }
     return stringBuilder.toString();
