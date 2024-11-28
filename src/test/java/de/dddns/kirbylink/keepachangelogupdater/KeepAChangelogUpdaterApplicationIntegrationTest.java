@@ -161,14 +161,14 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       var expectedOutputAddEntry = String.format(stringFormatAddEntry, program);
 
       var stringFormatRelease = """
-         usage: java -jar %s -s release -b <arg> -c | -o <arg> -i <arg>  -r <arg> -rt <arg>
-          -b,--branch <arg>          Main branch for link generation
-          -c,--console               Output result to console instead of a file
-          -i,--input <arg>           Path to the existing CHANGELOG.md file
-          -o,--output <arg>          Path to the output file (default: input path)
-          -r,--repository <arg>      Repository URL for link generation
-          -rt,--release-type <arg>   Release type: major, minor, patch
-         """;
+          usage: java -jar %s -s release -b <arg> -c | -o <arg> -i <arg>  -r <arg> -rt <arg>
+           -b,--branch <arg>          Main branch for link generation
+           -c,--console               Output result to console instead of a file
+           -i,--input <arg>           Path to the existing CHANGELOG.md file
+           -o,--output <arg>          Path to the output file (default: input path)
+           -r,--repository <arg>      Repository URL for link generation
+           -rt,--release-type <arg>   Release type: major, minor, patch
+          """;
       var expectedOutputRelease = String.format(stringFormatRelease, program);
 
       return Stream.of(
@@ -279,8 +279,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
         KeepAChangelogUpdaterApplication.main(args);
 
         // Then
-        AssertionsForInterfaceTypes.assertThat(targetPath).exists()
-          .binaryContent().isEqualTo(expectedOutput.getBytes());
+        AssertionsForInterfaceTypes.assertThat(targetPath).exists().binaryContent().isEqualTo(expectedOutput.getBytes());
 
         deleteDirectoryRecursively(temporaryFolder);
       }
@@ -350,8 +349,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
         KeepAChangelogUpdaterApplication.main(args);
 
         // Then
-        AssertionsForInterfaceTypes.assertThat(targetPath).exists()
-          .binaryContent().isEqualTo(expectedOutput.getBytes());
+        AssertionsForInterfaceTypes.assertThat(targetPath).exists().binaryContent().isEqualTo(expectedOutput.getBytes());
 
         deleteDirectoryRecursively(temporaryFolder);
       }
@@ -370,7 +368,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var printStream = new PrintStream(byteArrayOutputStream);
         var originalOut = System.out;
-         System.setOut(printStream);
+        System.setOut(printStream);
 
         var expectedOutput = """
             # Changelog
@@ -427,8 +425,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
         KeepAChangelogUpdaterApplication.main(args);
 
         // Then
-        AssertionsForInterfaceTypes.assertThat(targetPath).exists()
-          .binaryContent().isEqualTo(expectedOutput.getBytes());
+        AssertionsForInterfaceTypes.assertThat(targetPath).exists().binaryContent().isEqualTo(expectedOutput.getBytes());
 
         deleteDirectoryRecursively(temporaryFolder);
       }
@@ -441,10 +438,10 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var printStream = new PrintStream(byteArrayOutputStream);
         var originalOut = System.out;
-         System.setOut(printStream);
+        System.setOut(printStream);
 
-         var date = LocalDate.now().toString();
-         var stringFormat = """
+        var date = LocalDate.now().toString();
+        var stringFormat = """
             # Changelog of some application
 
             All notable changes to this project will be documented in this file.
@@ -486,7 +483,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
             [0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0
             [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1
             """;
-         var expectedOutput = String.format(stringFormat, date);
+        var expectedOutput = String.format(stringFormat, date);
 
         try {
           // When
@@ -584,8 +581,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
         KeepAChangelogUpdaterApplication.main(args);
 
         // Then
-        AssertionsForInterfaceTypes.assertThat(targetPath).exists()
-          .binaryContent().isEqualTo(expectedOutput.getBytes());
+        AssertionsForInterfaceTypes.assertThat(targetPath).exists().binaryContent().isEqualTo(expectedOutput.getBytes());
 
         deleteDirectoryRecursively(temporaryFolder);
       }
@@ -602,47 +598,47 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
         var date = LocalDate.now().toString();
         var stringFormat = """
-                # Changelog of some application
+            # Changelog of some application
 
-                All notable changes to this project will be documented in this file.
+            All notable changes to this project will be documented in this file.
 
-                The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-                and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-                And there is some additional description.
+            And there is some additional description.
 
-                ## [Unreleased]
+            ## [Unreleased]
 
-                ## [0.1.1] - %s
-                ### Added
-                - Document the `convert()` method
+            ## [0.1.1] - %s
+            ### Added
+            - Document the `convert()` method
 
-                ## [0.1.0] - 2024-07-20
-                ### Changed
-                - Change structure of VersionEntity
+            ## [0.1.0] - 2024-07-20
+            ### Changed
+            - Change structure of VersionEntity
 
-                ### Fixed
-                - Replace application name in MAKE.md file
+            ### Fixed
+            - Replace application name in MAKE.md file
 
-                ### Removed
-                - Remove unused method `parse()`
-                - Delete check for NullpointerException in `main()` method
+            ### Removed
+            - Remove unused method `parse()`
+            - Delete check for NullpointerException in `main()` method
 
-                ### Security
-                - Fixing a buffer overflow
+            ### Security
+            - Fixing a buffer overflow
 
-                ### Deprecated
-                - Mark API as deprecated in further version
+            ### Deprecated
+            - Mark API as deprecated in further version
 
-                ## [0.0.1] - 2024-06.30
-                ### Added
-                - Add initial files
+            ## [0.0.1] - 2024-06.30
+            ### Added
+            - Add initial files
 
-                [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-                [0.1.1]: https://git.example.com:443/organization/repo.git/compare/0.1.0...0.1.1
-                [0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0
-                [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1
-                """;
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [0.1.1]: https://git.example.com:443/organization/repo.git/compare/0.1.0...0.1.1
+            [0.1.0]: https://git.example.com:443/organization/repo.git/compare/0.0.1...0.1.0
+            [0.0.1]: https://git.example.com:443/organization/repo.git/releases/tag/0.0.1
+            """;
 
         var expectedOutput = String.format(stringFormat, date);
 
@@ -694,8 +690,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
         KeepAChangelogUpdaterApplication.main(args);
 
         // Then
-        AssertionsForInterfaceTypes.assertThat(inputAndOutputPath).exists()
-          .binaryContent().isEqualTo(expectedOutput.getBytes());
+        AssertionsForInterfaceTypes.assertThat(inputAndOutputPath).exists().binaryContent().isEqualTo(expectedOutput.getBytes());
 
         deleteDirectoryRecursively(temporaryFolder);
       }
@@ -713,7 +708,7 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var printStream = new PrintStream(byteArrayOutputStream);
         var originalOut = System.out;
-         System.setOut(printStream);
+        System.setOut(printStream);
 
         var expectedOutput = """
             # Changelog
@@ -915,18 +910,18 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
         }
       }
 
-        @Test
-        void testMain_WhenMethodWithScenarioAutoGenerateWithAutoReleaseAndBreakingChangeAndAllRequiredArgsIsCalled_ThenNewReleaseIsCreatedAndResultIsPrinted() throws URISyntaxException {
+      @Test
+      void testMain_WhenMethodWithScenarioAutoGenerateWithAutoReleaseAndBreakingChangeAndAllRequiredArgsIsCalled_ThenNewReleaseIsCreatedAndResultIsPrinted() throws URISyntaxException {
 
-          // Given
-          var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-breaking-changes.txt", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
-          var byteArrayOutputStream = new ByteArrayOutputStream();
-          var printStream = new PrintStream(byteArrayOutputStream);
-          var originalOut = System.out;
-          System.setOut(printStream);
+        // Given
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-breaking-changes.txt", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
 
-          var date = LocalDate.now().toString();
-          var stringFormat = """
+        var date = LocalDate.now().toString();
+        var stringFormat = """
             # Changelog
 
             All notable changes to this project will be documented in this file.
@@ -953,17 +948,17 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
             [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
             """;
 
-          try {
-            // When
-            KeepAChangelogUpdaterApplication.main(args);
-            var expectedOutput = String.format(stringFormat, date);
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+          var expectedOutput = String.format(stringFormat, date);
 
-            // Then
-            var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-            assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
-          } finally {
-            System.setOut(originalOut);
-          }
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
       }
 
       @Test
@@ -1080,6 +1075,48 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
           // Then
           var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
           assertThat(consoleOutput).isNotEmpty().contains(sourceAndTargetChangelog);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
+
+      @Test
+      void testMain_WhenMethodWithScenarioAutoGenerateWithBreakingChangesCommitsButWithoutBody_ThenBreakingChangesHasNoDescription() throws URISyntaxException {
+        
+        // Given
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-breaking-changes-and-without-body.txt", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
+        
+        var date = LocalDate.now().toString();
+        var stringFormat = """
+              # Changelog
+
+              All notable changes to this project will be documented in this file.
+              
+              The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+              and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+              
+              ## [Unreleased]
+              
+              ## [1.0.0] - %s
+              ### Fixed
+              - Fixing typo in `Status` enum for persistent name scheme update
+              
+              [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+              [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
+              """;
+        
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+          var expectedOutput = String.format(stringFormat, date);
+          
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
         } finally {
           System.setOut(originalOut);
         }
