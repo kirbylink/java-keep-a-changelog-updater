@@ -1082,38 +1082,38 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
 
       @Test
       void testMain_WhenMethodWithScenarioAutoGenerateWithBreakingChangesCommitsButWithoutBody_ThenBreakingChangesHasNoDescription() throws URISyntaxException {
-        
+
         // Given
         var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-breaking-changes-and-without-body.txt", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var printStream = new PrintStream(byteArrayOutputStream);
         var originalOut = System.out;
         System.setOut(printStream);
-        
+
         var date = LocalDate.now().toString();
         var stringFormat = """
               # Changelog
 
               All notable changes to this project will be documented in this file.
-              
+
               The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
               and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-              
+
               ## [Unreleased]
-              
+
               ## [1.0.0] - %s
               ### Fixed
               - Fixing typo in `Status` enum for persistent name scheme update
-              
+
               [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
               [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
               """;
-        
+
         try {
           // When
           KeepAChangelogUpdaterApplication.main(args);
           var expectedOutput = String.format(stringFormat, date);
-          
+
           // Then
           var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
           assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
