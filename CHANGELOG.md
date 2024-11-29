@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.0.1] - 2024-11-29
+### Fixed
+- Add null check if breaking changes should be printed
+
 ## [v2.0.0] - 2024-11-06
 ### Added
 - Support `Security` and `Deprecated` for conventional commits
@@ -50,6 +54,7 @@ appear in the `Security` category instead of `Fixed`.
 - Support for semantic versioning.
 
 [unreleased]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/main...HEAD
+[v2.0.1]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v2.0.0...v2.0.1
 [v2.0.0]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v1.2.0...v2.0.0
 [v1.2.0]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v1.1.1...v1.2.0
 [v1.1.1]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v1.1.0...v1.1.1

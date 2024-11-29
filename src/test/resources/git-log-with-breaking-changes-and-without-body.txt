@@ -1,0 +1,5 @@
+commit 91b9a52a7c655d356289c2607d32a2e1a97277c2
+Author: kirbylink <kirbylink@github.com>
+Date:   Thu Oct 3 13:43:47 2024 +0200
+
+    fix!: Fixing typo in `Status` enum for persistent name scheme update
