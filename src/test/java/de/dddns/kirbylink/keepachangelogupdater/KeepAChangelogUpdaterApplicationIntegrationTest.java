@@ -820,148 +820,6 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       }
 
       @Test
-      void testMain_WhenMethodWithScenarioAutoGenerateWithoutAutoReleaseAndAllRequiredArgsIsCalled_ThenNewEntriesAreAddedWithBreakingChangeAndResultIsPrinted() throws URISyntaxException {
-
-        // Given
-        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-breaking-changes.txt", "-c"};
-        var byteArrayOutputStream = new ByteArrayOutputStream();
-        var printStream = new PrintStream(byteArrayOutputStream);
-        var originalOut = System.out;
-        System.setOut(printStream);
-
-        var expectedOutput = """
-            # Changelog
-
-            All notable changes to this project will be documented in this file.
-
-            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-            ## [Unreleased]
-            ### Added
-            - Implement git log parsing
-
-            ### Fixed
-            - Correct minor bug in parsing logic
-
-            BREAKING CHANGE: Additional Multiple lines
-            that shows that there are breaking changes.
-
-            Some Multiple lines
-            that shows that there are breaking changes.
-
-            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-            """;
-
-        try {
-          // When
-          KeepAChangelogUpdaterApplication.main(args);
-
-          // Then
-          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
-        } finally {
-          System.setOut(originalOut);
-        }
-      }
-
-      @Test
-      void testMain_WhenMethodWithScenarioAutoGenerateWithAutoReleaseAndAllRequiredArgsIsCalled_ThenNewReleaseIsCreatedAndResultIsPrinted() throws URISyntaxException {
-
-        // Given
-        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log.txt", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
-        var byteArrayOutputStream = new ByteArrayOutputStream();
-        var printStream = new PrintStream(byteArrayOutputStream);
-        var originalOut = System.out;
-        System.setOut(printStream);
-
-        var date = LocalDate.now().toString();
-        var stringFormat = """
-            # Changelog
-
-            All notable changes to this project will be documented in this file.
-
-            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-            ## [Unreleased]
-
-            ## [0.1.0] - %s
-            ### Added
-            - Implement git log parsing
-
-            ### Fixed
-            - Correct minor bug in parsing logic
-
-            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-            [0.1.0]: https://git.example.com:443/organization/repo.git/releases/tag/0.1.0
-            """;
-
-        try {
-          // When
-          KeepAChangelogUpdaterApplication.main(args);
-          var expectedOutput = String.format(stringFormat, date);
-
-          // Then
-          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
-        } finally {
-          System.setOut(originalOut);
-        }
-      }
-
-      @Test
-      void testMain_WhenMethodWithScenarioAutoGenerateWithAutoReleaseAndBreakingChangeAndAllRequiredArgsIsCalled_ThenNewReleaseIsCreatedAndResultIsPrinted() throws URISyntaxException {
-
-        // Given
-        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-breaking-changes.txt", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
-        var byteArrayOutputStream = new ByteArrayOutputStream();
-        var printStream = new PrintStream(byteArrayOutputStream);
-        var originalOut = System.out;
-        System.setOut(printStream);
-
-        var date = LocalDate.now().toString();
-        var stringFormat = """
-            # Changelog
-
-            All notable changes to this project will be documented in this file.
-
-            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-            ## [Unreleased]
-
-            ## [1.0.0] - %s
-            ### Added
-            - Implement git log parsing
-
-            ### Fixed
-            - Correct minor bug in parsing logic
-
-            BREAKING CHANGE: Additional Multiple lines
-            that shows that there are breaking changes.
-
-            Some Multiple lines
-            that shows that there are breaking changes.
-
-            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-            [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
-            """;
-
-        try {
-          // When
-          KeepAChangelogUpdaterApplication.main(args);
-          var expectedOutput = String.format(stringFormat, date);
-
-          // Then
-          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
-        } finally {
-          System.setOut(originalOut);
-        }
-      }
-
-      @Test
       void testMain_WhenMethodWithScenarioAutoGenerateWithAutoReleaseAndCustomProperties_ThenMajorReleaseWillBeBuildAndCommitsUnderOtherCategories() throws URISyntaxException {
 
         // Given
@@ -1081,38 +939,42 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
       }
 
       @Test
-      void testMain_WhenMethodWithScenarioAutoGenerateWithBreakingChangesCommitsButWithoutBody_ThenBreakingChangesHasNoDescription() throws URISyntaxException {
+      void testMain_WhenMethodWithScenarioAutoGenerateWithoutAutoReleaseAndAllRequiredArgsIsCalled_ThenNewEntriesAreAddedWithBreakingChangeAndResultIsPrinted() throws URISyntaxException {
 
         // Given
-        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-breaking-changes-and-without-body.txt", "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", "src/test/resources/git-log-with-breaking-changes.txt", "-c"};
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var printStream = new PrintStream(byteArrayOutputStream);
         var originalOut = System.out;
         System.setOut(printStream);
 
-        var date = LocalDate.now().toString();
-        var stringFormat = """
-              # Changelog
+        var expectedOutput = """
+            # Changelog
 
-              All notable changes to this project will be documented in this file.
+            All notable changes to this project will be documented in this file.
 
-              The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-              and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-              ## [Unreleased]
+            ## [Unreleased]
+            ### Added
+            - Implement git log parsing
 
-              ## [1.0.0] - %s
-              ### Fixed
-              - Fixing typo in `Status` enum for persistent name scheme update
+            ### Fixed
+            - Correct minor bug in parsing logic
 
-              [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
-              [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
-              """;
+            BREAKING CHANGE: Additional Multiple lines
+            that shows that there are breaking changes.
+
+            Some Multiple lines
+            that shows that there are breaking changes.
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            """;
 
         try {
           // When
           KeepAChangelogUpdaterApplication.main(args);
-          var expectedOutput = String.format(stringFormat, date);
 
           // Then
           var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
@@ -1120,6 +982,106 @@ class KeepAChangelogUpdaterApplicationIntegrationTest {
         } finally {
           System.setOut(originalOut);
         }
+      }
+
+      @ParameterizedTest(name = "{0} => {1}")
+      @MethodSource ("provideArgsForMethodWithScenarioAutoGenerate")
+      void testMain_MethodWithScenarioAutoGenerate(String given, String when, String gitLog, String expectedOutputFormat) throws URISyntaxException {
+
+        // Given
+        var args = new String[] {"-s", "auto-generate", "-i", "src/test/resources/CHANGELOG-created.md", "-g", gitLog, "-a", "-r", "https://git.example.com:443/organization/repo.git", "-b", "main", "-c"};
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
+        var originalOut = System.out;
+        System.setOut(printStream);
+
+        var date = LocalDate.now().toString();
+
+        try {
+          // When
+          KeepAChangelogUpdaterApplication.main(args);
+          var expectedOutput = String.format(expectedOutputFormat, date);
+
+          // Then
+          var consoleOutput = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+          assertThat(consoleOutput).isNotEmpty().contains(expectedOutput);
+        } finally {
+          System.setOut(originalOut);
+        }
+      }
+
+      private static Stream<Arguments> provideArgsForMethodWithScenarioAutoGenerate() {
+
+        var expectedOutputFormat01 = """
+            # Changelog
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            ## [Unreleased]
+
+            ## [0.1.0] - %s
+            ### Added
+            - Implement git log parsing
+
+            ### Fixed
+            - Correct minor bug in parsing logic
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [0.1.0]: https://git.example.com:443/organization/repo.git/releases/tag/0.1.0
+            """;
+
+        var expectedOutputFormat02 = """
+            # Changelog
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            ## [Unreleased]
+
+            ## [1.0.0] - %s
+            ### Added
+            - Implement git log parsing
+
+            ### Fixed
+            - Correct minor bug in parsing logic
+
+            BREAKING CHANGE: Additional Multiple lines
+            that shows that there are breaking changes.
+
+            Some Multiple lines
+            that shows that there are breaking changes.
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
+            """;
+
+        var expectedOutputFormat03 = """
+            # Changelog
+
+            All notable changes to this project will be documented in this file.
+
+            The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+            and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+            ## [Unreleased]
+
+            ## [1.0.0] - %s
+            ### Fixed
+            - Fixing typo in `Status` enum for persistent name scheme update
+
+            [unreleased]: https://git.example.com:443/organization/repo.git/compare/main...HEAD
+            [1.0.0]: https://git.example.com:443/organization/repo.git/releases/tag/1.0.0
+            """;
+
+        return Stream.of(
+            Arguments.of("With auto-release and all required args", "Then new release created", "src/test/resources/git-log.txt", expectedOutputFormat01),
+            Arguments.of("With auto-release, breaking change and all required args", "Then new release created", "src/test/resources/git-log-with-breaking-changes.txt", expectedOutputFormat02),
+            Arguments.of("With auto-release, breaking change but without body", "Then breaking change description not created", "src/test/resources/git-log-with-breaking-changes-and-without-body.txt", expectedOutputFormat03));
       }
     }
   }
