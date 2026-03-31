@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.0.17] - 2026-04-01
+### Changed
+- Update Maven dependencies
+
 ## [v2.0.16] - 2026-03-01
 ### Changed
 - Update Maven dependencies
@@ -114,6 +118,7 @@ appear in the `Security` category instead of `Fixed`.
 - Support for semantic versioning.
 
 [unreleased]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/main...HEAD
+[v2.0.17]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v2.0.16...v2.0.17
 [v2.0.16]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v2.0.15...v2.0.16
 [v2.0.15]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v2.0.14...v2.0.15
 [v2.0.14]: https://github.com/kirbylink/java-keep-a-changelog-updater/compare/v2.0.13...v2.0.14
